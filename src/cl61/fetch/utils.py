@@ -1,10 +1,39 @@
 import xarray as xr
 import io
 import pandas as pd
+import requests
+import time
+
+
+def process_metadata(metadata, func, save_path=None):
+    result = pd.DataFrame({})
+    for row in metadata:
+        if "live" in row["filename"]:
+            if int(row["size"]) < 100000:
+                continue
+            while True:
+                try:
+                    print(row["filename"])
+                    bad_file = False
+                    res = requests.get(row["downloadUrl"])
+                    result_ = func(res)
+                    result = pd.concat([result_, result])
+                except ValueError as error:
+                    print(error)
+                    time.sleep(1)
+                    continue
+                except OSError:
+                    bad_file = True
+                    print("Bad file")
+                    break
+                break
+            if bad_file:
+                continue
+    return result
 
 
 def response(res):
-    # return data in netcdf and diagnostics in csv
+    """return data in netcdf and diagnostics in csv"""
     df = xr.open_groups(io.BytesIO(res.content))
     if "/diagnostics" in df.keys():
         df["/"] = df["/"].swap_dims({"profile": "time"})
