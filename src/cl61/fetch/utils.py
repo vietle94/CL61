@@ -9,6 +9,7 @@ def process_metadata(metadata, func, save_path=None):
     result = pd.DataFrame({})
     for row in metadata:
         if "live" in row["filename"]:
+            i = 0
             if int(row["size"]) < 100000:
                 continue
             while True:
@@ -19,6 +20,11 @@ def process_metadata(metadata, func, save_path=None):
                     result_ = func(res)
                     result = pd.concat([result_, result])
                 except ValueError as error:
+                    i += 1
+                    print(i)
+                    if i > 50:
+                        print("skip")
+                        break
                     print(error)
                     time.sleep(1)
                     continue
