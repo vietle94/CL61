@@ -28,7 +28,7 @@ def process_metadata(metadata, func, save_path=None):
                     print(error)
                     time.sleep(1)
                     continue
-                except OSError:
+                except (OSError, KeyError):
                     bad_file = True
                     print("Bad file")
                     break
