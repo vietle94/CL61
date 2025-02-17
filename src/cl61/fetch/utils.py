@@ -7,7 +7,7 @@ from concurrent.futures import ThreadPoolExecutor
 from itertools import repeat
 
 
-def process_metadata(metadata, func, max_workers=16):
+def process_metadata(metadata, func):
     result = []
 
     def child(row, func):
@@ -39,7 +39,7 @@ def process_metadata(metadata, func, max_workers=16):
             if bad_file:
                 return None
 
-    with ThreadPoolExecutor(max_workers=max_workers) as exe:
+    with ThreadPoolExecutor() as exe:
         # # Maps the method 'cube' with a list of values.
         result = exe.map(child, metadata, repeat(func))
 
