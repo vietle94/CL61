@@ -3,22 +3,25 @@ import io
 import pandas as pd
 import requests
 import time
+from concurrent.futures import ThreadPoolExecutor
+from itertools import repeat
 
 
-def process_metadata(metadata, func, save_path=None):
-    result = pd.DataFrame({})
-    for row in metadata:
+def process_metadata(metadata, func, max_workers=16):
+    result = []
+
+    def child(row, func):
         if "live" in row["filename"]:
             i = 0
             if int(row["size"]) < 100000:
-                continue
+                return None
             while True:
                 try:
                     print(row["filename"])
                     bad_file = False
                     res = requests.get(row["downloadUrl"])
                     result_ = func(res)
-                    result = pd.concat([result_, result])
+                    return result_
                 except ValueError as error:
                     i += 1
                     print(i)
@@ -34,8 +37,14 @@ def process_metadata(metadata, func, save_path=None):
                     break
                 break
             if bad_file:
-                continue
-    return result
+                return None
+
+    with ThreadPoolExecutor(max_workers=max_workers) as exe:
+        # # Maps the method 'cube' with a list of values.
+        result = exe.map(child, metadata, repeat(func))
+
+    df = pd.concat(result, ignore_index=True)
+    return df
 
 
 def response(res):
