@@ -3,46 +3,44 @@ import io
 import pandas as pd
 import requests
 import time
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor
 from itertools import repeat
+
+
+def process_metadata_child(row, func):
+    if "live" in row["filename"]:
+        i = 0
+        if int(row["size"]) < 100000:
+            return None
+        while True:
+            try:
+                print(row["filename"])
+                bad_file = False
+                res = requests.get(row["downloadUrl"])
+                result_ = func(res)
+                return result_
+            except ValueError as error:
+                i += 1
+                print(i)
+                if i > 50:
+                    print("skip")
+                    break
+                print(error)
+                time.sleep(1)
+                continue
+            except (OSError, KeyError):
+                bad_file = True
+                print("Bad file")
+                break
+            break
+        if bad_file:
+            return None
 
 
 def process_metadata(metadata, func):
     result = []
-
-    def child(row, func):
-        if "live" in row["filename"]:
-            i = 0
-            if int(row["size"]) < 100000:
-                return None
-            while True:
-                try:
-                    print(row["filename"])
-                    bad_file = False
-                    res = requests.get(row["downloadUrl"])
-                    result_ = func(res)
-                    return result_
-                except ValueError as error:
-                    i += 1
-                    print(i)
-                    if i > 50:
-                        print("skip")
-                        break
-                    print(error)
-                    time.sleep(1)
-                    continue
-                except (OSError, KeyError):
-                    bad_file = True
-                    print("Bad file")
-                    break
-                break
-            if bad_file:
-                return None
-
-    with ThreadPoolExecutor() as exe:
-        # # Maps the method 'cube' with a list of values.
-        result = exe.map(child, metadata, repeat(func))
-
+    with ProcessPoolExecutor() as exe:
+        result = exe.map(process_metadata_child, metadata, repeat(func))
     df = pd.concat(result, ignore_index=True)
     return df
 
