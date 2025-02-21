@@ -1,9 +1,7 @@
 import requests
-import io
-from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 from itertools import repeat
 import time
-import xarray as xr
 
 
 def fetch_raw(site, start_date, end_date, save_path):
@@ -15,10 +13,8 @@ def fetch_raw(site, start_date, end_date, save_path):
         "site": site,
         "instrument": "cl61d",
     }
+    print(params)
     metadata = requests.get(url, params).json()
-    # for row in metadata:
-    #     raw(row, save_path)
-    #     break
     with ThreadPoolExecutor() as exe:
         exe.map(raw, metadata, repeat(save_path))
 
@@ -52,11 +48,3 @@ def raw(row, save_path):
             break
         if bad_file:
             return None
-
-
-def response_raw(res):
-    """return data in netcdf"""
-    df = xr.open_groups(io.BytesIO(res.content))
-    if "/diagnostics" in df.keys():
-        df["/"] = df["/"].swap_dims({"profile": "time"})
-    return df["/"]
