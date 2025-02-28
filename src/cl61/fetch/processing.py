@@ -1,6 +1,8 @@
 import pandas as pd
 import requests
-from cl61.fetch.utils import process_metadata, response
+from cl61.fetch.utils import process_metadata, response, process_metadata_child
+import xarray as xr
+import io
 
 
 def fetch_processing(func, site, start_date, end_date, save_path):
@@ -55,3 +57,42 @@ def noise(res):
 def housekeeping(res):
     _, diag_ = response(res)
     return diag_
+
+
+def fetch_integration(site, start_date, end_date, save_path):
+    url = "https://cloudnet.fmi.fi/api/raw-files"
+    pr = pd.period_range(start=start_date, end=end_date, freq="D")
+    for i in pr:
+        idate = i.strftime("%Y-%m-%d")
+        print(idate)
+        params = {
+            "dateFrom": idate,
+            "dateTo": idate,
+            "site": site,
+            "instrument": "cl61d",
+        }
+        metadata = requests.get(url, params).json()
+        if not metadata:
+            continue
+        for row in metadata:
+            result = process_metadata_child(row, integration)
+            if result is None:
+                continue
+            if result is not False:
+                break
+        print("saving")
+        result.to_csv(save_path + i.strftime("%Y%m%d") + ".csv", index=False)
+
+
+def integration(res):
+    df = xr.open_dataset(io.BytesIO(res.content))
+    integration_name = [
+        "time between consecutive profiles in seconds",
+        "profile_interval_in_seconds",
+    ]
+    for attr in integration_name:
+        if attr in df.attrs:
+            return pd.DataFrame(
+                {"datetime": [df.time[0].values], "integration": [df.attrs[attr]]}
+            )
+    return False
