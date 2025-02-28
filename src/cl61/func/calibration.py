@@ -48,13 +48,7 @@ def merge_calibration(site):
         else:
             df_diag = xr.open_mfdataset(path_cal, group="monitoring")
         df_diag_cal = df_diag.sel(time=slice(t1, t2))
-        df_diag_cal = df_diag_cal[
-            [
-                "laser_temperature",
-                "internal_temperature",
-                "transmitter_enclosure_temperature",
-            ]
-        ]
+        df_diag_cal = df_diag_cal[["laser_temperature", "internal_temperature"]]
 
         df_diag_cal = df_diag_cal.reindex(
             time=df_cal.time.values, method="nearest", tolerance="8s"
