@@ -2,41 +2,8 @@ import xarray as xr
 import numpy as np
 import matplotlib.pyplot as plt
 import glob
-import matplotlib as mpl
 import string
-import numpy as np
-import pywt
-
-
-# %%
-def noise_filter(profile, wavelet="bior1.5"):
-    # wavelet transform
-    level = 8
-    n_pad = (len(profile) // 2**level + 4) * 2**level - len(profile)
-    coeff = pywt.swt(
-        np.pad(
-            profile,
-            (n_pad - n_pad // 2, n_pad // 2),
-            "constant",
-            constant_values=(0, 0),
-        ),
-        wavelet,
-        trim_approx=True,
-        # level=7,
-        level=level,
-    )
-
-    uthresh = np.median(np.abs(coeff[1])) / 0.6745 * np.sqrt(2 * np.log(len(coeff[1])))
-    # minimax_thresh = (
-    #     np.median(np.abs(coeff[1]))
-    #     / 0.6745
-    #     * (0.3936 + 0.1829 * np.log2(len(coeff[1])))
-    # )
-    coeff[1:] = (pywt.threshold(i, value=uthresh, mode="soft") for i in coeff[1:])
-    filtered = pywt.iswt(coeff, wavelet)
-    filtered = filtered[(n_pad - n_pad // 2) : len(profile) + (n_pad - n_pad // 2)]
-    return filtered
-
+from cl61.func.calibration_T import temperature_ref, noise_filter
 
 # %%
 for site, lim in zip(
@@ -74,6 +41,157 @@ for site, lim in zip(
         ax_.grid()
         ax_.legend()
     fig.savefig(
-        f"/media/viet/CL61/img/calibration_noise_{site}.png", dpi=600, bbox_inches="tight")
+        f"/media/viet/CL61/img/calibration_noise_{site}.png",
+        dpi=600,
+        bbox_inches="tight",
+    )
 
+# %%
+site = "vehmasmaki"
+t_range = range(16, 26)
+files = glob.glob(f"/media/viet/CL61/calibration/{site}/merged/*.nc")
+fig, ax = plt.subplots(
+    2, 5, sharex=True, sharey=True, figsize=(12, 6), constrained_layout=True
+)
+cmap = plt.get_cmap("tab10")
+for i, file in enumerate(files):
+    df = xr.open_dataset(file)
+    df_date = df.time.values[0].astype("datetime64[D]").astype(str)
+    print(df_date)
+    df["internal_temperature_floor"] = np.floor(df.internal_temperature)
+    for ax_, t in zip(ax.flatten(), t_range):
+        if t not in df["internal_temperature_floor"].values:
+            continue
+        df_ = df.where(df.internal_temperature_floor == t)
+        df_mean, _ = temperature_ref(df_)
+        df_plot = df_mean.sel(internal_temperature_bins=t)
+        ax_.plot(df_plot.ppol_ref, df_plot.range, label=df_date, c=cmap(i))
+    df.close()
+
+for ax_ in ax.flatten():
+    ax_.grid()
+    ax_.legend(loc="upper right")
+    ax_.set_xlim([-1e-14, 1e-14])
+
+for ax_ in ax[:, 0]:
+    ax_.set_ylabel("range")
+
+for ax_ in ax[-1, :]:
+    ax_.set_xlabel("ppol/r^2")
+
+for ax_, t in zip(ax.flatten(), t_range):
+    ax_.set_title(f"T: {t}°C")
+
+for n, ax_ in enumerate(ax.flatten()):
+    ax_.text(
+        -0.0,
+        1.05,
+        "(" + string.ascii_lowercase[n] + ")",
+        transform=ax_.transAxes,
+        size=12,
+    )
+
+fig.savefig(
+    f"/media/viet/CL61/img/calibration_temperature_{site}.png",
+    dpi=600,
+    bbox_inches="tight",
+)
+# %%
+site = "hyytiala"
+t_range = range(13, 15)
+files = glob.glob(f"/media/viet/CL61/calibration/{site}/merged/*.nc")
+fig, ax = plt.subplots(
+    1, 2, sharex=True, sharey=True, figsize=(6, 3), constrained_layout=True
+)
+cmap = plt.get_cmap("tab10")
+for i, file in enumerate(files):
+    df = xr.open_dataset(file)
+    df_date = df.time.values[0].astype("datetime64[D]").astype(str)
+    print(df_date)
+    df["internal_temperature_floor"] = np.floor(df.internal_temperature)
+    for ax_, t in zip(ax.flatten(), t_range):
+        if t not in df["internal_temperature_floor"].values:
+            continue
+        df_ = df.where(df.internal_temperature_floor == t)
+        df_mean, _ = temperature_ref(df_)
+        df_plot = df_mean.sel(internal_temperature_bins=t)
+        ax_.plot(df_plot.ppol_ref, df_plot.range, label=df_date, c=cmap(i))
+    df.close()
+
+for ax_ in ax.flatten():
+    ax_.grid()
+    ax_.legend(loc="upper right")
+    ax_.set_xlim([-1e-14, 1e-14])
+
+ax[0].set_ylabel("range")
+
+for ax_ in ax.flatten():
+    ax_.set_xlabel("ppol/r^2")
+
+for ax_, t in zip(ax.flatten(), t_range):
+    ax_.set_title(f"T: {t}°C")
+
+for n, ax_ in enumerate(ax.flatten()):
+    ax_.text(
+        -0.0,
+        1.05,
+        "(" + string.ascii_lowercase[n] + ")",
+        transform=ax_.transAxes,
+        size=12,
+    )
+
+fig.savefig(
+    f"/media/viet/CL61/img/calibration_temperature_{site}.png",
+    dpi=600,
+    bbox_inches="tight",
+)
+# %%
+site = "kenttarova"
+t_range = range(17, 20)
+files = glob.glob(f"/media/viet/CL61/calibration/{site}/merged/*.nc")
+fig, ax = plt.subplots(
+    1, 3, sharex=True, sharey=True, figsize=(9, 3), constrained_layout=True
+)
+cmap = plt.get_cmap("tab10")
+for i, file in enumerate(files):
+    df = xr.open_dataset(file)
+    df_date = df.time.values[0].astype("datetime64[D]").astype(str)
+    print(df_date)
+    df["internal_temperature_floor"] = np.floor(df.internal_temperature)
+    for ax_, t in zip(ax.flatten(), t_range):
+        if t not in df["internal_temperature_floor"].values:
+            continue
+        df_ = df.where(df.internal_temperature_floor == t)
+        df_mean, _ = temperature_ref(df_)
+        df_plot = df_mean.sel(internal_temperature_bins=t)
+        ax_.plot(df_plot.ppol_ref, df_plot.range, label=df_date, c=cmap(i))
+    df.close()
+
+for ax_ in ax.flatten():
+    ax_.grid()
+    ax_.legend(loc="upper right")
+    ax_.set_xlim([-1e-14, 1e-14])
+
+ax[0].set_ylabel("range")
+
+for ax_ in ax.flatten():
+    ax_.set_xlabel("ppol/r^2")
+
+for ax_, t in zip(ax.flatten(), t_range):
+    ax_.set_title(f"T: {t}°C")
+
+for n, ax_ in enumerate(ax.flatten()):
+    ax_.text(
+        -0.0,
+        1.05,
+        "(" + string.ascii_lowercase[n] + ")",
+        transform=ax_.transAxes,
+        size=12,
+    )
+
+fig.savefig(
+    f"/media/viet/CL61/img/calibration_temperature_{site}.png",
+    dpi=600,
+    bbox_inches="tight",
+)
 # %%
