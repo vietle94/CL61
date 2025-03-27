@@ -1,8 +1,12 @@
 import pandas as pd
 import requests
 from cl61.fetch.utils import process_metadata, response, process_metadata_child
+from cl61.func.calibration_cloud import calibration_factor
 import xarray as xr
 import io
+import numpy as np
+
+ref = np.load("cal_ref.npy")
 
 
 def fetch_processing(func, site, start_date, end_date, save_path):
@@ -96,3 +100,17 @@ def integration(res):
                 {"datetime": [df.time[0].values], "integration": [df.attrs[attr]]}
             )
     return False
+
+
+def cloud_calibration(res):
+    df, _ = response(res)
+    df = df.sel(range=slice(1000, 4000))
+    test = df.mean(dim="time")
+    res = np.convolve(test.p_pol, ref, mode="same")
+    return pd.DataFrame(
+        {
+            "datetime": [df.time[0].values],
+            "cross_correlation": [res.max()],
+            "c": [calibration_factor(test).values],
+        }
+    )

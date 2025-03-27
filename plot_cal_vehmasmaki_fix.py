@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from cl61.func.calibration_T import temperature_ref
 from cl61.func.study_case import process_raw
 from matplotlib.colors import LogNorm
+import string
 # %%
 
 file_dir = "/media/viet/CL61/studycase/vehmasmaki/20241209/"
@@ -50,6 +51,30 @@ ax[1].pcolormesh(
     shading="nearest",
     norm=LogNorm(vmin=1e-7, vmax=1e-4),
 )
+fig.savefig(
+    "/media/viet/CL61/img/studycase_vehmasmaki_20241209.png",
+    dpi=600,
+    bbox_inches="tight",
+)
+# %%
+profile = df_sample.isel(time=2)
+ref_profile = df_mean.sel(internal_temperature_bins=profile.internal_temperature_bins)
+
+fig, ax = plt.subplots(1, 3, sharey=True, figsize=(9, 3), sharex=True)
+ax[0].plot(profile.ppol_r, df_sample.range, ".")
+ax[1].plot(profile.ppol_r - ref_profile.ppol_ref, df_sample.range, ".")
+ax[2].plot(ref_profile.ppol_ref, df_sample.range, ".")
+ax[0].set_xlim([-2e-13, 5e-14])
+
+for n, ax_ in enumerate(ax.flatten()):
+    ax_.text(
+        -0.0,
+        1.03,
+        "(" + string.ascii_lowercase[n] + ")",
+        transform=ax_.transAxes,
+        size=12,
+    )
+    ax_.grid()
 fig.savefig(
     "/media/viet/CL61/img/studycase_vehmasmaki_20241209.png",
     dpi=600,
