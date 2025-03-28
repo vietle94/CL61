@@ -63,7 +63,7 @@ def housekeeping(res):
     return diag_
 
 
-def fetch_integration(site, start_date, end_date, save_path):
+def fetch_attrs(func, site, start_date, end_date, save_path):
     url = "https://cloudnet.fmi.fi/api/raw-files"
     pr = pd.period_range(start=start_date, end=end_date, freq="D")
     for i in pr:
@@ -79,13 +79,14 @@ def fetch_integration(site, start_date, end_date, save_path):
         if not metadata:
             continue
         for row in metadata:
-            result = process_metadata_child(row, integration)
-            if result is None:
-                continue
-            if result is not False:
+            if "live" in row["filename"]:
+                result = process_metadata_child(row, func)
+                if result is not False:
+                    print("saving")
+                    result.to_csv(
+                        save_path + i.strftime("%Y%m%d") + ".csv", index=False
+                    )
                 break
-        print("saving")
-        result.to_csv(save_path + i.strftime("%Y%m%d") + ".csv", index=False)
 
 
 def integration(res):
@@ -94,11 +95,29 @@ def integration(res):
         "time between consecutive profiles in seconds",
         "profile_interval_in_seconds",
     ]
+    result = pd.DataFrame(
+        {
+            "datetime": [df.time[0].values],
+            "integration_t": [
+                np.median(
+                    np.diff(df["time"].values).astype("timedelta64[ns]")
+                    / np.timedelta64(1, "s")
+                )
+            ],
+        }
+    )
     for attr in integration_name:
         if attr in df.attrs:
-            return pd.DataFrame(
-                {"datetime": [df.time[0].values], "integration": [df.attrs[attr]]}
-            )
+            result["integration"] = df.attrs[attr]
+    return result
+
+
+def sw_version(res):
+    df = xr.open_dataset(io.BytesIO(res.content))
+    if "sw_version" in df.attrs:
+        return pd.DataFrame(
+            {"datetime": [df.time[0].values], "sw_version": [df.attrs["sw_version"]]}
+        )
     return False
 
 
