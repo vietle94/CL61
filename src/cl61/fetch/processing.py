@@ -1,7 +1,7 @@
 import pandas as pd
 import requests
 from cl61.fetch.utils import process_metadata, response, process_metadata_child
-from cl61.func.calibration_cloud import calibration_factor
+from cl61.func.calibration_cloud import calibration_etaS
 import xarray as xr
 import io
 import numpy as np
@@ -130,6 +130,6 @@ def cloud_calibration(res):
         {
             "datetime": [df.time[0].values],
             "cross_correlation": [res.max()],
-            "c": [calibration_factor(test).values],
+            "etaS": [calibration_etaS(test).values],
         }
     )
