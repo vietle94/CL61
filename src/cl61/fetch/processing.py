@@ -131,5 +131,6 @@ def cloud_calibration(res):
             "datetime": [df.time[0].values],
             "cross_correlation": [res.max()],
             "etaS": [calibration_etaS(test).values],
+            "range": [df["range"].isel(range=np.argmax(res)).values],
         }
     )
