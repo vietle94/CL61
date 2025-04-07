@@ -5,6 +5,7 @@ from cl61.func.calibration_cloud import calibration_etaS
 import xarray as xr
 import io
 import numpy as np
+import os
 
 ref = np.load("cal_ref.npy")
 
@@ -14,6 +15,8 @@ def fetch_processing(func, site, start_date, end_date, save_path):
     pr = pd.period_range(start=start_date, end=end_date, freq="D")
 
     for i in pr:
+        if os.path.exists(save_path + i.strftime("%Y%m%d") + ".csv"):
+            continue
         idate = i.strftime("%Y-%m-%d")
         print(idate)
         params = {
