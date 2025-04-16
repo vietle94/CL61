@@ -58,3 +58,27 @@ def temperature_ref(df):
     )
 
     return df_mean, df_std
+
+
+def noise_filter_std(profile, wavelet="bior2.2"):
+    # wavelet transform
+    level = 8
+    n_pad = (len(profile) // 2**level + 4) * 2**level - len(profile)
+    coeff = pywt.swt(
+        np.pad(
+            profile,
+            (n_pad - n_pad // 2, n_pad // 2),
+            "symmetric",
+            # constant_values=(0, 0),
+        ),
+        wavelet,
+        trim_approx=True,
+        # level=7,
+        level=level,
+    )
+
+    uthresh = np.median(np.abs(coeff[1])) / 0.6745 * np.sqrt(2 * np.log(len(coeff[1])))
+    coeff[1:] = (pywt.threshold(i, value=uthresh, mode="soft") for i in coeff[1:])
+    filtered = pywt.iswt(coeff, wavelet)
+    filtered = filtered[(n_pad - n_pad // 2) : len(profile) + (n_pad - n_pad // 2)]
+    return filtered
