@@ -36,6 +36,7 @@ def temperature_ref(df):
     df_gr = df.groupby_bins("internal_temperature", temp_range, labels=temp_range[:-1])
     df_mean = df_gr.mean(dim="time", skipna=True)
     df_std = df_gr.std(dim="time", skipna=True)
+    df_count = df_gr.count(dim="time")
 
     df_mean = df_mean.dropna(
         dim="internal_temperature_bins", how="all", subset=["ppol_r", "xpol_r"]
@@ -47,8 +48,12 @@ def temperature_ref(df):
     ppol = []
     xpol = []
     for t in df_mean.internal_temperature_bins.values:
-        ppol.append(noise_filter(df_mean.sel(internal_temperature_bins=t)["ppol_r"]))
-        xpol.append(noise_filter(df_mean.sel(internal_temperature_bins=t)["xpol_r"]))
+        ppol.append(
+            noise_filter_std(df_mean.sel(internal_temperature_bins=t)["ppol_r"])
+        )
+        xpol.append(
+            noise_filter_std(df_mean.sel(internal_temperature_bins=t)["xpol_r"])
+        )
 
     df_mean["ppol_ref"] = xr.DataArray(
         ppol, dims=["internal_temperature_bins", "range"]
@@ -57,7 +62,7 @@ def temperature_ref(df):
         xpol, dims=["internal_temperature_bins", "range"]
     )
 
-    return df_mean, df_std
+    return df_mean, df_std, df_count
 
 
 def noise_filter_std(profile, wavelet="bior2.2"):
