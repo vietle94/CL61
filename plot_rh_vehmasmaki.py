@@ -10,7 +10,7 @@ from matplotlib.colors import LogNorm
 file_dir = "/media/viet/CL61/studycase/vehmasmaki/20230519/"
 df = xr.open_mfdataset(glob.glob(file_dir + "*.nc"))
 
-fig, ax = plt.subplots(3, 1, figsize=(12, 6), sharex=True, constrained_layout=True)
+fig, ax = plt.subplots(4, 1, figsize=(12, 6), sharex=True, constrained_layout=True)
 p = ax[0].pcolormesh(
     df["time"],
     df["range"],
@@ -57,11 +57,18 @@ ax[1].plot(
     df["window_condition"],
     ".",
 )
+ax[3].plot(
+    df["datetime"],
+    df["window_blower_heater"],
+    ".",
+)
+ax[3].grid()
 ax[2].plot(df["datetime"], dp, ".", label="Internal dew point")
 ax[2].plot(t["datetime"], t["Air temperature [°C]"], ".", label="Air temperature")
 ax[2].legend()
 ax[2].set_ylabel("Temperature [°C]")
 ax[1].set_ylabel("Window condition")
+ax[3].set_ylabel("Window blower heater")
 ax[1].grid()
 ax[2].grid()
 ax[0].xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
@@ -102,4 +109,33 @@ fig.savefig(
     bbox_inches="tight",
 )
 
+# %%
+site = "hyytiala"
+df = pd.DataFrame({})
+for file in glob.glob(f"/media/viet/CL61/{site}/Diag/*.csv"):
+    df_ = pd.read_csv(file)
+    if "window_condition" not in df_.columns:
+        continue
+    df_["datetime"] = pd.to_datetime(df_["datetime"])
+    df_ = df_[df_["datetime"] > "2000-01-01"]
+    df_1h = (
+        df_.set_index("datetime")["window_condition"]
+        .resample("1h")
+        .mean(numeric_only=True)
+        .reset_index()
+    )
+    df = pd.concat([df, df_1h], ignore_index=True)
 
+fig, ax = plt.subplots(figsize=(9, 3))
+ax.scatter(df["datetime"], df["window_condition"], alpha=0.5, s=5, edgecolors="None")
+ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m"))
+ax.xaxis.set_major_locator(mdates.MonthLocator(interval=3))
+ax.set_ylim(70, 105)
+ax.set_axisbelow(True)
+ax.grid()
+ax.set_ylabel("Window condition")
+fig.savefig(
+    f"/media/viet/CL61/img/window_condition_{site}.png",
+    dpi=300,
+    bbox_inches="tight",
+)
