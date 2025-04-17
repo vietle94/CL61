@@ -47,6 +47,8 @@ def temperature_ref(df):
 
     ppol = []
     xpol = []
+    ppol_std = []
+    xpol_std = []
     for t in df_mean.internal_temperature_bins.values:
         ppol.append(
             noise_filter_std(df_mean.sel(internal_temperature_bins=t)["ppol_r"])
@@ -54,12 +56,24 @@ def temperature_ref(df):
         xpol.append(
             noise_filter_std(df_mean.sel(internal_temperature_bins=t)["xpol_r"])
         )
+        ppol_std.append(
+            noise_filter_std(df_std.sel(internal_temperature_bins=t)["ppol_r"])
+        )
+        xpol_std.append(
+            noise_filter_std(df_std.sel(internal_temperature_bins=t)["xpol_r"])
+        )
 
     df_mean["ppol_ref"] = xr.DataArray(
         ppol, dims=["internal_temperature_bins", "range"]
     )
     df_mean["xpol_ref"] = xr.DataArray(
         xpol, dims=["internal_temperature_bins", "range"]
+    )
+    df_std["ppol_ref"] = xr.DataArray(
+        ppol_std, dims=["internal_temperature_bins", "range"]
+    )
+    df_std["xpol_ref"] = xr.DataArray(
+        xpol_std, dims=["internal_temperature_bins", "range"]
     )
 
     return df_mean, df_std, df_count
