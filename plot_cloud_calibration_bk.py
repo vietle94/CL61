@@ -109,7 +109,7 @@ def read_diag(site, time=("22:00", "23:59")):
 
 
 # %%
-fig, axes = plt.subplots(4, 1, figsize=(9, 6), constrained_layout=True)
+fig, axes = plt.subplots(2, 2, figsize=(9, 6), constrained_layout=True)
 for site, ax, lim in zip(
     ["vehmasmaki", "hyytiala", "kenttarova", "lindenberg"],
     axes.flatten(),
@@ -133,7 +133,7 @@ for site, ax, lim in zip(
     ax.grid()
     ax.set_ylabel("c")
 
-ax.set_xlabel("laser_power_percent")
+    ax.set_xlabel("laser_power_percent")
 
 for n, ax_ in enumerate(axes.flatten()):
     ax_.text(
@@ -146,3 +146,5 @@ for n, ax_ in enumerate(axes.flatten()):
 fig.savefig(
     "/media/viet/CL61/img/calibration_factor_laser.png", bbox_inches="tight", dpi=600
 )
+
+# %%
