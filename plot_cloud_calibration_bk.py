@@ -5,6 +5,24 @@ import matplotlib.dates as mdates
 import string
 import pandas as pd
 
+
+# %%
+def read_diag(site):
+    diag = pd.DataFrame({})
+    for file in glob.glob(f"/media/viet/CL61/{site}/Diag/*.csv"):
+        df = pd.read_csv(file)
+        try:
+            df = df[["datetime", "laser_power_percent", "internal_temperature"]]
+        except KeyError:
+            continue
+        df["datetime"] = pd.to_datetime(df["datetime"])
+        df = df[df["datetime"] > "2000-01-01"]
+        df_1h = df.set_index("datetime").resample("5min").mean().reset_index()
+        diag = pd.concat([diag, df_1h])
+    diag = diag.reset_index(drop=True)
+    return diag
+
+
 # %%
 fig, axes = plt.subplots(4, 1, figsize=(9, 6), constrained_layout=True, sharex=True)
 for site, ax, lim in zip(
@@ -85,36 +103,12 @@ fig.savefig(
     "/media/viet/CL61/img/calibration_factor_bk.png", bbox_inches="tight", dpi=600
 )
 
-
-# %%
-def read_diag(site, time=("22:00", "23:59")):
-    diag = pd.DataFrame({})
-    for file in glob.glob(f"/media/viet/CL61/{site}/Diag/*.csv"):
-        df = pd.read_csv(file)
-        try:
-            df = df[["datetime", "laser_power_percent", "internal_temperature"]]
-        except KeyError:
-            continue
-        df["datetime"] = pd.to_datetime(df["datetime"])
-        df = df[df["datetime"] > "2000-01-01"]
-        df_1h = (
-            df.set_index("datetime")
-            .between_time(*time)
-            .resample("5min")
-            .mean()
-            .reset_index()
-        )
-        diag = pd.concat([diag, df_1h])
-    diag = diag.reset_index(drop=True)
-    return diag
-
-
 # %%
 fig, axes = plt.subplots(2, 2, figsize=(9, 6), constrained_layout=True)
 for site, ax, lim in zip(
     ["vehmasmaki", "hyytiala", "kenttarova", "lindenberg"],
     axes.flatten(),
-    [2, 2, 2, 2],
+    [20, 10, 5, 2],
 ):
     cloud = cloud_calibration(site)
     diag = read_diag(site)
@@ -128,7 +122,26 @@ for site, ax, lim in zip(
     )
 
     df_full = cloud.merge(diag)
+
     ax.scatter(df_full["laser_power_percent"], df_full["c"], alpha=0.5, s=1)
+    # # Bin the 'laser_power_percent' into bins of size 5
+    # bins = pd.cut(df_full["laser_power_percent"], bins=range(0, 110, 5))
+
+    # # Group by the bins and calculate the mean of 'c' for each bin
+    # avg_line = df_full.groupby(bins)["c"].mean()
+
+    # # Calculate bin centers (the middle point of each bin)
+    # bin_centers = [bin.left + (bin.right - bin.left) / 2 for bin in avg_line.index]
+
+    # # Plot the average line using the binned values
+    # ax.plot(
+    #     bin_centers,
+    #     avg_line,
+    #     color="red",
+    #     linestyle="-",
+    #     linewidth=2,
+    #     label="Average",
+    # )
 
     ax.set_ylim(0, lim)
     ax.grid()
@@ -149,30 +162,11 @@ fig.savefig(
 )
 
 # %%
-def read_diag(site):
-    diag = pd.DataFrame({})
-    for file in glob.glob(f"/media/viet/CL61/{site}/Diag/*.csv"):
-        df = pd.read_csv(file)
-        try:
-            df = df[["datetime", "laser_power_percent", "internal_temperature"]]
-        except KeyError:
-            continue
-        df["datetime"] = pd.to_datetime(df["datetime"])
-        df = df[df["datetime"] > "2000-01-01"]
-        df_1h = (
-            df.set_index("datetime")
-            .resample("5min")
-            .mean()
-            .reset_index()
-        )
-        diag = pd.concat([diag, df_1h])
-    diag = diag.reset_index(drop=True)
-    return diag
-
-# %%
 cmap = plt.get_cmap("viridis")
 cmap.set_bad("grey")
-fig, axes = plt.subplots(4, 1, figsize=(9, 6), constrained_layout=True, sharey=True, sharex=True)
+fig, axes = plt.subplots(
+    4, 1, figsize=(9, 6), constrained_layout=True, sharey=True, sharex=True
+)
 for site, ax, lim in zip(
     ["vehmasmaki", "hyytiala", "kenttarova", "lindenberg"],
     axes.flatten(),
@@ -190,7 +184,6 @@ for site, ax, lim in zip(
     )
 
     df_full = cloud.merge(diag, how="left")
-
     p = ax.scatter(
         df_full.datetime,
         df_full["c"],
@@ -226,9 +219,8 @@ for n, ax_ in enumerate(axes.flatten()):
         size=12,
     )
     ax_.legend(loc="upper left")
-    
+
 
 fig.savefig(
     "/media/viet/CL61/img/calibration_factor_ts2.png", bbox_inches="tight", dpi=600
 )
-
