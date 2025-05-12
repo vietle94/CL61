@@ -22,6 +22,7 @@ def read_diag(site):
     diag = diag.reset_index(drop=True)
     return diag
 
+
 # %%
 fig, axes = plt.subplots(4, 1, figsize=(9, 6), constrained_layout=True, sharex=True)
 for site, ax, lim in zip(
@@ -76,7 +77,9 @@ fig.savefig(
 )
 
 # %%
-fig, axes = plt.subplots(2, 2, figsize=(9, 6), sharex=True, sharey=True, constrained_layout=True)
+fig, axes = plt.subplots(
+    2, 2, figsize=(6, 4), sharex=True, sharey=True, constrained_layout=True
+)
 for site, ax, lim in zip(
     ["vehmasmaki", "hyytiala", "kenttarova", "lindenberg"],
     axes.flatten(),
@@ -118,10 +121,13 @@ for site, ax, lim in zip(
     # ax.set_ylim(0, lim)
     ax.grid()
     ax.axhline(1, color="grey", linestyle="--")
-    ax.set_ylabel("c")
 
-    ax.set_xlabel("Laser power (%)")
+axes[0, 0].set_ylabel("c")
+axes[1, 0].set_ylabel("c")
+axes[1, 0].set_xlabel("Laser power (%)")
+axes[1, 1].set_xlabel("Laser power (%)")
 ax.set_ylim(0, 10)
+
 for n, ax_ in enumerate(axes.flatten()):
     ax_.text(
         -0.0,
