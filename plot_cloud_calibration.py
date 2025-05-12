@@ -130,9 +130,9 @@ for n, ax_ in enumerate(axes.flatten()):
         transform=ax_.transAxes,
         size=12,
     )
-# fig.savefig(
-#     "/media/viet/CL61/img/calibration_factor_laser.png", bbox_inches="tight", dpi=600
-# )
+fig.savefig(
+    "/media/viet/CL61/img/calibration_factor_laser.png", bbox_inches="tight", dpi=600
+)
 
 # %%
 cmap = plt.get_cmap("viridis")
