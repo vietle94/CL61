@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 import glob
 import matplotlib.dates as mdates
@@ -55,10 +54,10 @@ def read_noise(site, time=("22:00", "23:59")):
 cmap = plt.get_cmap("viridis")
 cmap.set_bad("grey")
 fig, axes = plt.subplots(
-    4, 1, figsize=(8, 8), sharex=True, constrained_layout=True, sharey=True
+    4, 2, figsize=(9, 8), sharex=True, constrained_layout=True, sharey="col"
 )
 for ax, site in zip(
-    axes.flatten(),
+    axes,
     ["vehmasmaki", "hyytiala", "kenttarova", "lindenberg"],
 ):
     diag = read_diag(site)
@@ -76,28 +75,37 @@ for ax, site in zip(
     df_integration.drop(columns=["datetime"], inplace=True)
     df["date"] = df.datetime.dt.date
     df = df.merge(df_integration, on="date", how="outer")
-    p = ax.scatter(
+    p = ax[0].scatter(
         df["datetime"],
         (df["co_std"] ** 2) * df["integration"],
-        c=df["laser_power_percent"],
-        vmin=10,
-        vmax=100,
         plotnonfinite=True,
         cmap=cmap,
         s=1,
     )
-    ax.set_ylabel(r"$\sigma²_{ppol/r^2} \times t$")
-    ax.grid()
-    ax.set_yscale("log")
-    ax.yaxis.set_tick_params(labelbottom=True)
-cbar = fig.colorbar(p, ax=axes, label="Laser power (%)")
+    ax[0].set_ylabel(r"$\sigma²_{ppol/r^2} \times t$")
+    ax[0].set_yscale("log")
+    ax[0].yaxis.set_tick_params(labelbottom=True)
+    ax[0].set_ylim([0, 1e-24])
+
+    p = ax[1].scatter(diag.datetime, diag["laser_power_percent"], alpha=0.5, s=1)
+    ax[1].set_ylabel("Laser power (%)")
+    ax[1].grid(which="both")
+    ax[0].grid()
+
 ax_flat = axes.flatten()
-ax_flat[0].axvspan("2022-06-15", "2023-04-27", color="C0", alpha=0.2, label="1.1.10")
-ax_flat[0].axvspan("2023-04-28", "2025-01-01", color="C1", alpha=0.2, label="1.2.7")
-ax_flat[1].axvspan("2022-11-21", "2023-11-22", color="C0", alpha=0.2, label="1.1.10")
-ax_flat[1].axvspan("2023-11-23", "2025-01-01", color="C1", alpha=0.2, label="1.2.7")
-ax_flat[2].axvspan("2023-06-21", "2025-01-01", color="C1", alpha=0.2, label="1.2.7")
-ax_flat[3].axvspan("2024-03-01", "2025-01-01", color="C0", alpha=0.2, label="1.1.10")
+for ax_ in axes[0, :]:
+    ax_.axvspan("2022-06-15", "2023-04-27", color="C1", alpha=0.2, label="1.1.10")
+    ax_.axvspan("2023-04-28", "2025-01-01", color="C2", alpha=0.2, label="1.2.7")
+
+for ax_ in axes[1, :]:
+    ax_.axvspan("2022-11-21", "2023-11-22", color="C1", alpha=0.2, label="1.1.10")
+    ax_.axvspan("2023-11-23", "2025-01-01", color="C2", alpha=0.2, label="1.2.7")
+
+for ax_ in axes[2, :]:
+    ax_.axvspan("2023-06-21", "2025-01-01", color="C2", alpha=0.2, label="1.2.7")
+
+for ax_ in axes[3, :]:
+    ax_.axvspan("2024-03-01", "2025-01-01", color="C1", alpha=0.2, label="1.1.10")
 
 for n, ax_ in enumerate(axes.flatten()):
     ax_.text(
@@ -108,9 +116,10 @@ for n, ax_ in enumerate(axes.flatten()):
         size=12,
     )
     ax_.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m"))
-    ax_.xaxis.set_major_locator(mdates.MonthLocator([6, 12]))
+    ax_.xaxis.set_major_locator(mdates.MonthLocator(12))
+    ax_.xaxis.set_minor_locator(mdates.MonthLocator(6))
     ax_.legend(loc="upper left")
-ax.set_ylim([0, 1e-24])
+
 fig.savefig("/media/viet/CL61/img/bk_ts.png", dpi=600, bbox_inches="tight")
 
 # %%
