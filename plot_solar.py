@@ -11,29 +11,25 @@ import string
 # %%
 site = "kenttarova"
 files = glob.glob(f"/media/viet/CL61/calibration/{site}/merged/*.nc")
-df = xr.open_dataset(files[0])
+df = xr.open_dataset(files[2])
 df_mean, df_std, _ = temperature_ref(df)
 
 # %%
-file_dir = "/media/viet/CL61/studycase/kenttarova/20230926/"
+file_dir = "/media/viet/CL61/studycase/kenttarova/20240305/"
 df_case_full = xr.open_mfdataset(file_dir + "*.nc")
 df_case_full = df_case_full.isel(range=slice(1, None))
-df_case_full = df_case_full.sel(time=slice("2023-09-26T09:00", "2023-09-26T13:00"))
-df_case = df_case_full.sel(time=slice("2023-09-26T09:00", "2023-09-26T11:00"))
+df_case_full = df_case_full.sel(time=slice("2024-03-05T11:00", "2024-03-05T16:00"))
+df_case = df_case_full.sel(time=slice("2024-03-05T11:00", "2024-03-05T12:00"))
 df_case["ppol_r"] = df_case.p_pol / (df_case.range**2)
 
 df_case_mean = df_case.mean(dim="time", skipna=True)
 df_case_std = df_case.std(dim="time", skipna=True)
-profile = df_case.sel(time="2023-09-26T10:00", method='nearest')
+# profile = df_case.sel(time="2023-09-26T<10:00", method="nearest")
 
 # %%
-fig = plt.figure(layout="constrained", figsize=(8, 6))
+fig = plt.figure(layout="constrained", figsize=(8, 8))
 ax_dict = fig.subplot_mosaic(
-    [
-        ["time", "time"],
-        ["mean_case", "mean_cal"],
-        ["std_case", "std_cal"]
-    ],
+    [["time", "time"], ["mean_case", "mean_cal"], ["std_case", "std_cal"]],
     sharey=True,
 )
 p = ax_dict["time"].pcolormesh(
@@ -46,36 +42,28 @@ fig.colorbar(p, ax=ax_dict["time"], label=r"$\beta$ [m-1 sr-1]")
 ax_dict["time"].xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
 ax_dict["time"].xaxis.set_major_locator(mdates.HourLocator(interval=1))
 ax_dict["time"].set_ylabel("Range [m]")
-ax_dict["mean_case"].scatter(
-    df_case_mean.ppol_r,
-    df_case_mean.range,
-    s=1
-)
+ax_dict["mean_case"].scatter(df_case_mean.ppol_r, df_case_mean.range, s=1)
 ax_dict["mean_case"].set_ylabel("Range [m]")
 ax_dict["mean_cal"].scatter(
-    df_mean.sel(internal_temperature_bins=19).ppol_r,
+    df_mean.sel(internal_temperature_bins=18).ppol_r,
     df_mean.range,
     s=1,
     label="original",
 )
 
 ax_dict["mean_cal"].scatter(
-    df_mean.sel(internal_temperature_bins=19).ppol_ref,
+    df_mean.sel(internal_temperature_bins=18).ppol_ref,
     df_mean.range,
     s=1,
     label="smoothed",
 )
-ax_dict["std_case"].scatter(
-    df_case_std.ppol_r,
-    df_case_std.range,
-    s=1
-)
+ax_dict["std_case"].scatter(df_case_std.ppol_r, df_case_std.range, s=1)
 ax_dict["std_case"].set_ylabel("Range [m]")
 ax_dict["std_cal"].scatter(
-    df_std.sel(internal_temperature_bins=19).ppol_r, df_std.range, s=1, label="original"
+    df_std.sel(internal_temperature_bins=18).ppol_r, df_std.range, s=1, label="original"
 )
 ax_dict["std_cal"].scatter(
-    noise_filter_std(df_std.sel(internal_temperature_bins=19).ppol_r),
+    noise_filter_std(df_std.sel(internal_temperature_bins=18).ppol_r),
     df_std.range,
     s=1,
     label="smoothed",
