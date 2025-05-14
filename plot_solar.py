@@ -1,8 +1,6 @@
 import xarray as xr
 import matplotlib.pyplot as plt
-import numpy as np
 import matplotlib.dates as mdates
-import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 from cl61.func.calibration_T import temperature_ref, noise_filter, noise_filter_std
 import glob
@@ -69,8 +67,8 @@ ax_dict["std_cal"].scatter(
     label="smoothed",
 )
 
-ax_dict["mean_case"].set_xlim(-1e-14, 1e-14)
-ax_dict["mean_cal"].set_xlim(-1e-14, 1e-14)
+ax_dict["mean_case"].set_xlim(-1e-14, 3e-14)
+ax_dict["mean_cal"].set_xlim(-1e-14, 3e-14)
 
 ax_dict["std_case"].set_xlim(2e-14, 6e-14)
 ax_dict["std_cal"].set_xlim(2e-14, 6e-14)
@@ -91,5 +89,3 @@ fig.savefig(
     dpi=600,
     bbox_inches="tight",
 )
-
-# %%
