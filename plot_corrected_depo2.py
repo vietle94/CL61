@@ -11,16 +11,15 @@ from cl61.func.study_case import process_raw, background_noise
 myFmt = mdates.DateFormatter("%Y\n%m-%d\n%H:%M")
 
 # %%
-file_dir = "/media/viet/CL61/studycase/kenttarova/20231009/"
-df_sample = process_raw(file_dir, "20231009 210000", "20231009 230000")
-bk_noise = background_noise("kenttarova", "20231009")  # same time frame
+file_dir = "/media/viet/CL61/studycase/kenttarova/20240413/"
+df_sample = process_raw(file_dir, "20240413 090000", "20240413 093000")
+bk_noise = background_noise("kenttarova", "20240413")  # same time frame
 bk_noise = (
     bk_noise.set_index("datetime")
-    .between_time("21:00", "23:00")
+    .between_time("09:00", "09:30")
     .reset_index()
     .mean(numeric_only=True)
 )
-
 # %%
 files = glob.glob("/media/viet/CL61/calibration/kenttarova/merged/*.nc")
 df = xr.open_mfdataset(files)
@@ -71,53 +70,7 @@ df_sample["depo_c_std"] = np.abs(df_sample["depo_c"]) * np.sqrt(
 )
 
 # %%
-fig, ax = plt.subplots(1, 3, figsize=(9, 3), sharey=True, constrained_layout=True)
-
-ax[0].plot(df_sample["ppol_r"].mean(dim="time"), df_sample["range"], label="original")
-ax[0].plot(df_sample["ppol_c"].mean(dim="time"), df_sample["range"], label="corrected")
-ax[0].set_xlim([-1e-10, 5e-10])
-
-ax[1].plot(df_sample["xpol_r"].mean(dim="time"), df_sample["range"], label="original")
-ax[1].plot(df_sample["xpol_c"].mean(dim="time"), df_sample["range"], label="corrected")
-ax[1].set_xlim([-1e-13, 5e-13])
-
-ax[2].plot(
-    df_sample["xpol_r"].mean(dim="time") / df_sample["ppol_r"].mean(dim="time"),
-    df_sample["range"],
-    ".",
-    label="original",
-)
-ax[2].errorbar(
-    x=df_sample["xpol_c"].mean(dim="time") / df_sample["ppol_c"].mean(dim="time"),
-    y=df_sample.range,
-    xerr=np.sqrt((df_sample["depo_c_std"] ** 2).sum(dim="time")) / df_sample.time.size,
-    fmt=".",
-    label="corrected",
-)
-
-ax[2].set_xlim([-0.01, 0.008])
-
-for n, ax_ in enumerate(ax.flatten()):
-    ax_.grid()
-    ax_.legend()
-    ax_.text(
-        -0.0,
-        1.03,
-        "(" + string.ascii_lowercase[n] + ")",
-        transform=ax_.transAxes,
-        size=12,
-    )
-ax[0].set_ylim([0, 1200])
-ax[0].set_ylabel("Range (m)")
-ax[0].set_xlabel("ppol/r²")
-ax[1].set_xlabel("xpol/r²")
-ax[2].set_xlabel(r"$\delta$")
-# fig.savefig(
-#     "/media/viet/CL61/img/studycase_depo_profile.png", bbox_inches="tight", dpi=600
-# )
-
-# %%
-mask = df_sample["depo_c_std"] < 0.01
+mask = df_sample["depo_c_std"] < 0.2
 fig, ax = plt.subplots(
     1, 3, figsize=(10, 3), constrained_layout=True, sharex=True, sharey=True
 )
@@ -126,7 +79,7 @@ p = ax[0].pcolormesh(
     df_sample["range"],
     (df_sample["x_pol"] / df_sample["p_pol"]).T,
     vmin=0,
-    vmax=0.004,
+    vmax=0.15,
 )
 cbar = fig.colorbar(p, ax=ax[0])
 cbar.set_label(r"$\delta_{original}$")
@@ -136,7 +89,7 @@ p = ax[1].pcolormesh(
     df_sample["range"],
     df_sample["depo_c"].where(mask).T,
     vmin=0,
-    vmax=0.004,
+    vmax=0.15,
 )
 cbar = fig.colorbar(p, ax=ax[1])
 cbar.set_label(r"$\delta_{corrected}$")
@@ -146,14 +99,14 @@ p = ax[2].pcolormesh(
     df_sample["range"],
     df_sample["depo_c_std"].where(mask).T,
     vmin=0,
-    vmax=0.01,
+    vmax=0.15,
 )
 cbar = fig.colorbar(p, ax=ax[2])
 cbar.set_label(r"$\sigma_{\delta}$")
 for ax_ in ax.flatten():
     ax_.xaxis.set_major_formatter(myFmt)
     ax_.xaxis.set_major_locator(mdates.HourLocator(interval=1))
-ax[0].set_ylim([0, 1200])
+ax[0].set_ylim([100, 4000])
 
 for n, ax_ in enumerate(ax.flatten()):
     ax_.text(
@@ -164,8 +117,8 @@ for n, ax_ in enumerate(ax.flatten()):
         size=12,
     )
 ax[0].set_ylabel("Range (m)")
-# fig.savefig(
-#     "/media/viet/CL61/img/studycase_depo_corrected.png", bbox_inches="tight", dpi=600
-# )
+fig.savefig(
+    "/media/viet/CL61/img/studycase_depo_corrected2.png", bbox_inches="tight", dpi=600
+)
 
 # %%
