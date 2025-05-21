@@ -11,7 +11,7 @@ import matplotlib.dates as mdates
 site = "kenttarova"
 files = glob.glob(f"/media/viet/CL61/calibration/{site}/merged/*.nc")
 df = xr.open_dataset(files[0])
-df_mean, df_std = temperature_ref(df)
+df_mean, df_std, _ = temperature_ref(df)
 
 # %%
 fig, ax = plt.subplots(1, 3, figsize=(9, 3), sharey=True, constrained_layout=True)
