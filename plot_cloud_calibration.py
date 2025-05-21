@@ -126,7 +126,7 @@ axes[0, 0].set_ylabel("c")
 axes[1, 0].set_ylabel("c")
 axes[1, 0].set_xlabel("Laser power (%)")
 axes[1, 1].set_xlabel("Laser power (%)")
-ax.set_ylim(0, 10)
+ax.set_ylim(0, 2)
 
 for n, ax_ in enumerate(axes.flatten()):
     ax_.text(
