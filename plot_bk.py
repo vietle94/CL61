@@ -91,6 +91,7 @@ for ax, site in zip(
     ax1.tick_params(axis="y", labelcolor="C1")
     ax1.grid()
     ax.grid()
+    ax1.set_ylim(0, 110)
 
 axes[0].axvspan("2022-06-15", "2023-04-27", color="C2", alpha=0.2, label="1.1.10")
 axes[0].axvspan("2023-04-28", "2025-01-01", color="C3", alpha=0.2, label="1.2.7")
