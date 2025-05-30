@@ -35,5 +35,5 @@ def background_noise(site, date):
     df = pd.read_csv(file)
     df["datetime"] = pd.to_datetime(df["datetime"])
     df = df[df["datetime"] > "2000-01-01"]
-    df = df.groupby("range").get_group("(6000, 8000]")
+    df = df.groupby("range").get_group("(10000, 12000]")
     return df

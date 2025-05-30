@@ -71,35 +71,60 @@ df_sample["depo_c_std"] = np.abs(df_sample["depo_c"]) * np.sqrt(
 )
 
 # %%
+error = np.sqrt((df_sample["depo_c_std"] ** 2).sum(dim="time")) / df_sample.time.size
 fig, ax = plt.subplots(1, 3, figsize=(9, 3), sharey=True, constrained_layout=True)
 
-ax[0].plot(df_sample["ppol_r"].mean(dim="time"), df_sample["range"], label="original")
-ax[0].plot(df_sample["ppol_c"].mean(dim="time"), df_sample["range"], label="corrected")
+ax[0].plot(
+    df_sample["ppol_r"].mean(dim="time").where(error < 0.001),
+    df_sample["range"],
+    ".",
+    label="original",
+)
+ax[0].plot(
+    df_sample["ppol_c"].mean(dim="time").where(error < 0.001),
+    df_sample["range"],
+    ".",
+    label="corrected",
+)
 ax[0].set_xlim([-1e-10, 5e-10])
 
-ax[1].plot(df_sample["xpol_r"].mean(dim="time"), df_sample["range"], label="original")
-ax[1].plot(df_sample["xpol_c"].mean(dim="time"), df_sample["range"], label="corrected")
+ax[1].plot(
+    df_sample["xpol_r"].mean(dim="time").where(error < 0.001),
+    df_sample["range"],
+    ".",
+    label="original",
+)
+ax[1].plot(
+    df_sample["xpol_c"].mean(dim="time").where(error < 0.001),
+    df_sample["range"],
+    ".",
+    label="corrected",
+)
 ax[1].set_xlim([-1e-13, 5e-13])
 
 ax[2].plot(
-    df_sample["xpol_r"].mean(dim="time") / df_sample["ppol_r"].mean(dim="time"),
+    (df_sample["xpol_r"].mean(dim="time") / df_sample["ppol_r"].mean(dim="time")).where(
+        error < 0.001
+    ),
     df_sample["range"],
     ".",
     label="original",
 )
 ax[2].errorbar(
-    x=df_sample["xpol_c"].mean(dim="time") / df_sample["ppol_c"].mean(dim="time"),
+    x=(
+        df_sample["xpol_c"].mean(dim="time") / df_sample["ppol_c"].mean(dim="time")
+    ).where(error < 0.001),
     y=df_sample.range,
-    xerr=np.sqrt((df_sample["depo_c_std"] ** 2).sum(dim="time")) / df_sample.time.size,
+    xerr=error,
     fmt=".",
     label="corrected",
 )
 
-ax[2].set_xlim([-0.01, 0.008])
+ax[2].set_xlim([-0.005, 0.01])
 
 for n, ax_ in enumerate(ax.flatten()):
     ax_.grid()
-    ax_.legend()
+    ax_.legend(loc="upper right")
     ax_.text(
         -0.0,
         1.03,
@@ -107,14 +132,14 @@ for n, ax_ in enumerate(ax.flatten()):
         transform=ax_.transAxes,
         size=12,
     )
-ax[0].set_ylim([0, 1200])
+ax[0].set_ylim([0, 400])
 ax[0].set_ylabel("Range (m)")
-ax[0].set_xlabel("ppol/r²")
-ax[1].set_xlabel("xpol/r²")
+ax[0].set_xlabel(r"$\mu_{ppol}/r²$")
+ax[1].set_xlabel(r"$\mu_{xpol}/r²$")
 ax[2].set_xlabel(r"$\delta$")
-# fig.savefig(
-#     "/media/viet/CL61/img/studycase_depo_profile.png", bbox_inches="tight", dpi=600
-# )
+fig.savefig(
+    "/media/viet/CL61/img/studycase_depo_profile.png", bbox_inches="tight", dpi=600
+)
 
 # %%
 mask = df_sample["depo_c_std"] < 0.01
