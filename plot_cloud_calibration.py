@@ -31,6 +31,7 @@ for site, ax, lim in zip(
     [12, 10, 10, 2],
 ):
     cloud = cloud_calibration(site)
+    cloud = cloud[(cloud["cloud_base"] > 1000) & (cloud["cloud_base"] < 1200)]
     file_dir = f"/media/viet/CL61/{site}/Noise/*.csv"
     files = glob.glob(file_dir)
     df = pd.concat([pd.read_csv(file) for file in files], ignore_index=True)
@@ -86,6 +87,7 @@ for site, ax, lim in zip(
     [20, 10, 5, 2],
 ):
     cloud = cloud_calibration(site)
+    cloud = cloud[(cloud["cloud_base"] > 1000) & (cloud["cloud_base"] < 1200)]
     diag = read_diag(site)
 
     cloud = (
@@ -97,8 +99,7 @@ for site, ax, lim in zip(
     )
 
     df_full = cloud.merge(diag)
-
-    ax.scatter(df_full["laser_power_percent"], df_full["c"], alpha=0.05, s=1)
+    ax.scatter(df_full["laser_power_percent"], df_full["c"], alpha=0.5, s=1)
     # # Bin the 'laser_power_percent' into bins of size 5
     # bins = pd.cut(df_full["laser_power_percent"], bins=range(0, 110, 5))
 
@@ -152,6 +153,7 @@ for site, ax, lim in zip(
     [12, 10, 10, 3],
 ):
     cloud = cloud_calibration(site)
+    cloud = cloud[(cloud["cloud_base"] > 1000) & (cloud["cloud_base"] < 1200)]
     diag = read_diag(site)
 
     cloud = (
