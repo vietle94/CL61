@@ -57,8 +57,8 @@ ax[1, 0].set_ylabel("Range [m]")
 ax[1, 0].set_xlabel(r"$\mu_{ppol}/r^2$")
 ax[1, 1].set_xlabel(r"$\sigma_{ppol}/r^2$")
 
-ax[1, 2].set_xlabel(r"$\mu_{xpol}/r^2$")
-ax[1, 3].set_xlabel(r"$\sigma_{xpol}/r^2$")
+ax[1, 2].set_xlabel(r"$\mu_{ppol}/r^2$")
+ax[1, 3].set_xlabel(r"$\sigma_{ppol}/r^2$")
 
 for n, ax_ in enumerate(ax.flatten()):
     ax_.text(
