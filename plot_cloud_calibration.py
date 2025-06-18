@@ -183,12 +183,12 @@ for site, ax, lim in zip(
 ax.set_xlim(right=pd.to_datetime("2024-12-30"))
 fig.colorbar(p, ax=axes.ravel().tolist(), label="Laser power (%)")
 ax_flat = axes.flatten()
-ax_flat[0].axvspan("2022-06-15", "2023-04-27", color="C0", alpha=0.2, label="1.1.10")
-ax_flat[0].axvspan("2023-04-28", "2025-01-01", color="C1", alpha=0.2, label="1.2.7")
-ax_flat[1].axvspan("2022-11-21", "2023-11-22", color="C0", alpha=0.2, label="1.1.10")
-ax_flat[1].axvspan("2023-11-23", "2025-01-01", color="C1", alpha=0.2, label="1.2.7")
-ax_flat[2].axvspan("2023-06-21", "2025-01-01", color="C1", alpha=0.2, label="1.2.7")
-ax_flat[3].axvspan("2024-03-01", "2025-01-01", color="C0", alpha=0.2, label="1.1.10")
+ax_flat[0].axvspan("2022-06-15", "2023-04-27", color="C2", alpha=0.2, label="1.1.10")
+ax_flat[0].axvspan("2023-04-28", "2025-01-01", color="C3", alpha=0.2, label="1.2.7")
+ax_flat[1].axvspan("2022-11-21", "2023-11-22", color="C2", alpha=0.2, label="1.1.10")
+ax_flat[1].axvspan("2023-11-23", "2025-01-01", color="C3", alpha=0.2, label="1.2.7")
+ax_flat[2].axvspan("2023-06-21", "2025-01-01", color="C3", alpha=0.2, label="1.2.7")
+ax_flat[3].axvspan("2024-03-01", "2025-01-01", color="C2", alpha=0.2, label="1.1.10")
 
 ax.set_ylim(0, 10)
 for n, ax_ in enumerate(axes.flatten()):
@@ -205,3 +205,5 @@ for n, ax_ in enumerate(axes.flatten()):
 fig.savefig(
     "/media/viet/CL61/img/calibration_factor_ts.png", bbox_inches="tight", dpi=600
 )
+
+# %%
