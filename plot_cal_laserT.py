@@ -5,6 +5,7 @@ import glob
 import pandas as pd
 import matplotlib.dates as mdates
 from matplotlib.colors import LogNorm, SymLogNorm
+import string
 
 # %%
 site = "kenttarova"
@@ -108,8 +109,15 @@ for ax_ in ax[:, 0]:
 ax[-1, -1].set_xlabel("Frequency (Hz)")
 ax[-1, -1].set_ylim(0, 1)
 ax[0, 0].set_xlim(df_.time.values.min(), df_.time.values.min() + pd.Timedelta("1h"))
-
-
+for n, ax_ in enumerate(ax.flatten()):
+    ax_.text(
+        -0.0,
+        1.05,
+        "(" + string.ascii_lowercase[n] + ")",
+        transform=ax_.transAxes,
+        size=12,
+    )
+fig.savefig("/media/viet/CL61/img/calibration_fft.png", bbox_inches="tight", dpi=600)
 # %%
 fft_laser = np.fft.fft(df_.laser_temperature.values)
 freqx = np.fft.fftfreq(fft_laser.size, d=timestep)
@@ -192,9 +200,19 @@ p = ax[1, 1].pcolormesh(
 cbar = fig.colorbar(p, ax=ax[1, 1])
 cbar.ax.set_ylabel("xpol")
 ax[0, 0].set_xlim(df_.time.values.min(), df_.time.values.min() + pd.Timedelta("1h"))
-for ax_ in ax.flatten():
-    ax_.xaxis.set_major_formatter(mdates.DateFormatter("%Y\n%m-%d\n%H:%M"))
 
+for n, ax_ in enumerate(ax.flatten()):
+    ax_.xaxis.set_major_formatter(mdates.DateFormatter("%Y\n%m-%d\n%H:%M"))
+    ax_.text(
+        -0.0,
+        1.05,
+        "(" + string.ascii_lowercase[n] + ")",
+        transform=ax_.transAxes,
+        size=12,
+    )
+fig.savefig(
+    "/media/viet/CL61/img/calibration_fft_corrected.png", bbox_inches="tight", dpi=600
+)
 # %%
 fig, ax = plt.subplots(
     2, 2, figsize=(16, 9), sharey="col", sharex=True, constrained_layout=True
@@ -205,6 +223,137 @@ ax[1, 0].plot(df_.time, xpol_signal.real[5, :])
 ax[0, 1].plot(df_.time, df_.ppol_r.T.values[5, :])
 ax[1, 1].plot(df_.time, ppol_signal.real[5, :])
 
-for ax_ in ax.flatten():
-    ax_.grid()
+# %%
+df = xr.open_mfdataset(glob.glob("/media/viet/CL61/studycase/kenttarova/20230926/*.nc"))
+df = df.sel(range=slice(0, 300))
+# %%
+df = df_.sel(
+    time=slice(
+        pd.to_datetime("2023-09-26T9:00:00"),
+        pd.to_datetime("2023-09-26T12:59:59"),
+    )
+)
+# %%
+fig, ax = plt.subplots(2, 1, figsize=(9, 4), constrained_layout=True, sharex=True)
+p = ax[0].pcolormesh(
+    df.time,
+    df.range,
+    df.p_pol.T,
+    shading="nearest",
+    # norm=SymLogNorm(linthresh=1e-15, vmin=-1e-9, vmax=1e-9),
+    norm=LogNorm(vmin=1e-7, vmax=1e-4),
+)
+fig.colorbar(p, ax=ax[0])
+ax[0].xaxis.set_major_formatter(mdates.DateFormatter("%Y\n%m-%d\n%H:%M"))
+ax[0].set_ylabel("Range (m)")
+
+fft_ppol = df.p_pol.T
+fft_ppol = np.fft.fft(fft_ppol.values)
+freqx = np.fft.fftfreq(fft_ppol.shape[1], d=timestep)
+mask = (np.abs(freqx) < 0.0065) ^ (np.abs(freqx) < 0.009)  # filter frequencies range
+ppol_signal = fft_ppol.copy()
+ppol_signal[:, mask] = 0
+ppol_signal = np.fft.ifft(ppol_signal)
+
+p = ax[1].pcolormesh(
+    df.time,
+    df.range,
+    ppol_signal.real,
+    shading="nearest",
+    # norm=SymLogNorm(linthresh=1e-15, vmin=-1e-9, vmax=1e-9),
+    norm=LogNorm(vmin=1e-7, vmax=1e-4),
+)
+fig.colorbar(p, ax=ax[1])
+ax[1].xaxis.set_major_formatter(mdates.DateFormatter("%Y\n%m-%d\n%H:%M"))
+ax[1].set_ylabel("Range (m)")
+
+
+for n, ax_ in enumerate(ax.flatten()):
+    ax_.text(
+        -0.0,
+        1.05,
+        "(" + string.ascii_lowercase[n] + ")",
+        transform=ax_.transAxes,
+        size=12,
+    )
+# fig.savefig(
+#     "/media/viet/CL61/img/calibration_fft_corrected.png", bbox_inches="tight", dpi=600
+# )
+# %%
+df_ = df.sel(
+    time=slice(
+        pd.to_datetime("2023-09-26T9:00:00"),
+        pd.to_datetime("2023-09-26T12:59:59"),
+    ),
+    range=slice(0, 100),
+)
+fft_ppol = df_.p_pol.T
+fft_ppol = np.fft.fft(fft_ppol.values)
+fft_xpol = df_.x_pol.T
+fft_xpol = np.fft.fft(fft_xpol.values)
+freqx = np.fft.fftfreq(fft_ppol.shape[1], d=timestep)
+mask = (np.abs(freqx) < 0.0065) ^ (np.abs(freqx) < 0.009)  # filter frequencies range
+ppol_signal = fft_ppol.copy()
+ppol_signal[:, mask] = 0
+ppol_signal = np.fft.ifft(ppol_signal)
+
+xpol_signal = fft_xpol.copy()
+xpol_signal[:, mask] = 0
+xpol_signal = np.fft.ifft(xpol_signal)
+
+fig, ax = plt.subplots(4, 1, figsize=(6, 6), constrained_layout=True, sharex=True)
+
+p = ax[0].pcolormesh(
+    df_.time,
+    df_.range,
+    df_.p_pol.T,
+    shading="nearest",
+    norm=LogNorm(vmin=1e-7, vmax=1e-4),
+)
+cbar = fig.colorbar(p, ax=ax[0])
+cbar.ax.set_ylabel("ppol")
+
+
+p = ax[1].pcolormesh(
+    df_.time,
+    df_.range,
+    df_.x_pol.T,
+    shading="nearest",
+    norm=LogNorm(vmin=1e-7, vmax=1e-4),
+)
+cbar = fig.colorbar(p, ax=ax[1])
+cbar.ax.set_ylabel("xpol")
+
+p = ax[2].pcolormesh(
+    df_.time,
+    df_.range,
+    ppol_signal.real,
+    shading="nearest",
+    norm=LogNorm(vmin=1e-7, vmax=1e-4),
+)
+cbar = fig.colorbar(p, ax=ax[2])
+cbar.ax.set_ylabel("ppol")
+
+p = ax[3].pcolormesh(
+    df_.time,
+    df_.range,
+    xpol_signal.real,
+    shading="nearest",
+    norm=LogNorm(vmin=1e-7, vmax=1e-4),
+)
+cbar = fig.colorbar(p, ax=ax[3])
+cbar.ax.set_ylabel("xpol")
+
+for n, ax_ in enumerate(ax.flatten()):
     ax_.xaxis.set_major_formatter(mdates.DateFormatter("%Y\n%m-%d\n%H:%M"))
+    ax_.text(
+        -0.0,
+        1.05,
+        "(" + string.ascii_lowercase[n] + ")",
+        transform=ax_.transAxes,
+        size=12,
+    )
+fig.savefig(
+    "/media/viet/CL61/img/calibration_fft_corrected.png", bbox_inches="tight", dpi=600
+)
+# %%
