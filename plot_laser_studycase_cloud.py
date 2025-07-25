@@ -44,6 +44,7 @@ for n, ax_ in enumerate(ax.flatten()):
     )
     ax_.legend()
     ax_.grid()
+    ax_.set_xlabel("ppol")
 fig.savefig(
     "/media/viet/CL61/img/studycase_lindenberg_corrected.png",
     dpi=600,
