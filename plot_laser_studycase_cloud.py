@@ -27,11 +27,13 @@ profile_after = (df_after["p_pol"]).mean(dim="time")
 fig, ax = plt.subplots(
     1, 2, figsize=(7, 3), constrained_layout=True, sharey=True, sharex=True
 )
-ax[0].plot(profile_before, profile_before.range, ".", label="uncorrected")
-ax[0].plot(profile_before * 1.5, profile_before.range, ".", label="corrected")
+ax[0].scatter(profile_before, profile_before.range, label="uncorrected", alpha=0.5, edgecolor="none", s=20)
+ax[0].scatter(
+    profile_before * 1.5, profile_before.range, label="corrected", alpha=0.5, edgecolor="none", s=20
+)
 ax[0].set_title("2024-03-03", weight="bold")
-ax[1].plot(profile_after, profile_after.range, ".", label="uncorrected")
-ax[1].plot(profile_after * 0.6, profile_after.range, ".", label="corrected")
+ax[1].scatter(profile_after, profile_after.range, label="uncorrected", alpha=0.5, edgecolor="none", s=20)
+ax[1].scatter(profile_after * 0.6, profile_after.range, label="corrected", alpha=0.5, edgecolor="none", s=20)
 ax[1].set_title("2024-11-16", weight="bold")
 ax[0].set_xlim([-5e-7, 2e-6])
 for n, ax_ in enumerate(ax.flatten()):
