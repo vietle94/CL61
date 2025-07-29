@@ -50,18 +50,21 @@ def temperature_ref(df):
     ppol_std = []
     xpol_std = []
     for t in df_mean.internal_temperature_bins.values:
-        ppol.append(
-            noise_filter_std(df_mean.sel(internal_temperature_bins=t)["ppol_r"])
-        )
-        xpol.append(
-            noise_filter_std(df_mean.sel(internal_temperature_bins=t)["xpol_r"])
-        )
-        ppol_std.append(
-            noise_filter_std(df_std.sel(internal_temperature_bins=t)["ppol_r"])
-        )
-        xpol_std.append(
-            noise_filter_std(df_std.sel(internal_temperature_bins=t)["xpol_r"])
-        )
+        filtered = noise_filter_std(df_mean.sel(internal_temperature_bins=t)["ppol_r"])
+        filtered[:50] = df_mean.sel(internal_temperature_bins=t)["ppol_r"][:50].values
+        ppol.append(filtered)
+
+        filtered = noise_filter_std(df_mean.sel(internal_temperature_bins=t)["xpol_r"])
+        filtered[:50] = df_mean.sel(internal_temperature_bins=t)["xpol_r"][:50].values
+        xpol.append(filtered)
+
+        filtered = noise_filter_std(df_std.sel(internal_temperature_bins=t)["ppol_r"])
+        # filtered[:50] = df_std.sel(internal_temperature_bins=t)["ppol_r"][:50].values
+        ppol_std.append(filtered)
+
+        filtered = noise_filter_std(df_std.sel(internal_temperature_bins=t)["xpol_r"])
+        # filtered[:50] = df_std.sel(internal_temperature_bins=t)["xpol_r"][:50].values
+        xpol_std.append(filtered)
 
     df_mean["ppol_ref"] = xr.DataArray(
         ppol, dims=["internal_temperature_bins", "range"]
