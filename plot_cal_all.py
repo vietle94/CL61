@@ -2,12 +2,11 @@ import xarray as xr
 import numpy as np
 import matplotlib.pyplot as plt
 import glob
-import string
-from cl61.func.calibration_T import temperature_ref, noise_filter
+from cl61.func.calibration_T import temperature_ref
 import matplotlib as mpl
 
 # %%
-site = "kenttarova"
+site = "hyytiala"
 files = glob.glob(f"/media/viet/CL61/calibration/{site}/merged/*.nc")
 df = xr.open_mfdataset(files)
 df_mean, df_std, df_count = temperature_ref(df)
@@ -73,11 +72,11 @@ ax[0, 0].set_ylabel("Range [m]")
 ax[1, 0].set_ylabel("Range [m]")
 fig.subplots_adjust(bottom=0.3, hspace=0.5)
 
-for n, ax_ in enumerate(ax.flatten()):
+for ax_, lab in zip(ax.flatten(), ["i", "ii", "iii", "iv"]):
     ax_.text(
         -0.0,
         1.03,
-        "(" + string.ascii_lowercase[n] + ")",
+        "(" + lab + ")",
         transform=ax_.transAxes,
         size=12,
     )
@@ -158,11 +157,11 @@ ax[0, 0].set_ylabel("Range [m]")
 ax[1, 0].set_ylabel("Range [m]")
 fig.subplots_adjust(bottom=0.3, hspace=0.5)
 
-for n, ax_ in enumerate(ax.flatten()):
+for ax_, lab in zip(ax.flatten(), ["i", "ii", "iii", "iv"]):
     ax_.text(
         -0.0,
         1.03,
-        "(" + string.ascii_lowercase[n] + ")",
+        "(" + lab + ")",
         transform=ax_.transAxes,
         size=12,
     )
