@@ -64,39 +64,43 @@ ax_dict["mean_case"].set_ylabel("Range [m]")
 ax_dict["mean_case"].legend(loc="upper right")
 
 ax_dict["mean_cal"].scatter(
-    df_mean.sel(internal_temperature_bins=18).ppol_r,
-    df_mean.range,
-    s=1,
-    label=r"$\mu_{ppol/r²}$",
+    df_mean.sel(internal_temperature_bins=18).ppol_r, df_mean.range, s=1, c="C0"
 )
 
 ax_dict["mean_cal"].scatter(
-    df_mean.sel(internal_temperature_bins=18).ppol_ref,
-    df_mean.range,
+    df_mean.sel(internal_temperature_bins=18, range=slice(250, None)).ppol_ref,
+    df_mean.sel(internal_temperature_bins=18, range=slice(250, None)).range,
     s=1,
-    label=r"smoothed $\mu_{ppol/r²}$",
+    c="C1",
 )
-ax_dict["mean_cal"].legend()
 
-ax_dict["std_case"].scatter(
-    df_case_std.ppol_r, df_case_std.range, s=1, label=r"$\sigma_{ppol/r²}$"
+ax_dict["mean_cal"].scatter(
+    df_mean.sel(internal_temperature_bins=18, range=slice(None, 250)).ppol_r,
+    df_mean.sel(internal_temperature_bins=18, range=slice(None, 250)).range,
+    s=1,
+    c="C1",
 )
-ax_dict["std_case"].legend(loc="upper right")
+
+ax_dict["mean_cal"].set_xlabel(r"$\mu_{ppol/r²}$")
+
+
+ax_dict["std_case"].scatter(df_case_std.ppol_r, df_case_std.range, s=1)
+ax_dict["std_case"].set_xlabel(r"$\sigma_{ppol/r²}$")
 ax_dict["std_case"].set_ylabel("Range [m]")
 ax_dict["std_cal"].scatter(
     df_std.sel(internal_temperature_bins=18).ppol_r,
     df_std.range,
     s=1,
-    label=r"$\sigma_{ppol/r²}$",
 )
+
+filtered = noise_filter_std(df_std.sel(internal_temperature_bins=18).ppol_r)
+filtered[:100] = df_std.sel(internal_temperature_bins=18).ppol_r[:100].values
 ax_dict["std_cal"].scatter(
-    noise_filter_std(df_std.sel(internal_temperature_bins=18).ppol_r),
+    filtered,
     df_std.range,
     s=1,
-    label=r"smoothed $\sigma_{ppol/r²}$",
 )
-ax_dict["std_cal"].legend(loc="upper right")
-
+ax_dict["std_cal"].set_xlabel(r"$\sigma_{ppol/r²}$")
 ax_dict["mean_case"].set_xlim(-1e-14, 3e-14)
 ax_dict["mean_cal"].set_xlim(-1e-14, 3e-14)
 
@@ -119,3 +123,5 @@ fig.savefig(
     dpi=600,
     bbox_inches="tight",
 )
+
+# %%
