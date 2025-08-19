@@ -73,6 +73,8 @@ for ax, site in zip(
     )
     df_integration["date"] = df_integration["datetime"].dt.date
     df_integration.drop(columns=["datetime"], inplace=True)
+    if site == "kenttarova":
+        df_integration.loc[df_integration["integration"] > 20, "integration"] = 120
     df["date"] = df.datetime.dt.date
     df = df.merge(df_integration, on="date", how="outer")
     ax1 = ax.twinx()
@@ -93,15 +95,27 @@ for ax, site in zip(
     ax.grid()
     ax1.set_ylim(0, 110)
 
-axes[0].axvspan("2022-06-15", "2023-04-27", color="C0", alpha=0.1, label="1.1.10")
-axes[0].axvspan("2023-04-28", "2025-01-01", color="C1", alpha=0.1, label="1.2.7")
+axes[0].axvspan(
+    "2022-06-15", "2023-04-27", color="tab:brown", alpha=0.2, label="1.1.10"
+)
+axes[0].axvspan(
+    "2023-04-28", "2025-01-01", color="tab:purple", alpha=0.2, label="1.2.7"
+)
 
-axes[1].axvspan("2022-11-21", "2023-11-22", color="C0", alpha=0.1, label="1.1.10")
-axes[1].axvspan("2023-11-23", "2025-01-01", color="C1", alpha=0.1, label="1.2.7")
+axes[1].axvspan(
+    "2022-11-21", "2023-11-22", color="tab:brown", alpha=0.2, label="1.1.10"
+)
+axes[1].axvspan(
+    "2023-11-23", "2025-01-01", color="tab:purple", alpha=0.2, label="1.2.7"
+)
 
-axes[2].axvspan("2023-06-21", "2025-01-01", color="C1", alpha=0.1, label="1.2.7")
+axes[2].axvspan(
+    "2023-06-21", "2025-01-01", color="tab:purple", alpha=0.2, label="1.2.7"
+)
 
-axes[3].axvspan("2024-03-01", "2025-01-01", color="C0", alpha=0.1, label="1.1.10")
+axes[3].axvspan(
+    "2024-03-01", "2025-01-01", color="tab:brown", alpha=0.2, label="1.1.10"
+)
 
 for n, ax_ in enumerate(axes.flatten()):
     ax_.text(
