@@ -8,6 +8,7 @@ from cl61.func.calibration_T import temperature_ref
 import string
 from cl61.func.study_case import process_raw, background_noise
 from matplotlib.colors import LogNorm
+import matplotlib.ticker as mtick
 
 myFmt = mdates.DateFormatter("%Y\n%m-%d\n%H:%M")
 
@@ -135,59 +136,133 @@ fig.savefig(
 
 # %%
 error = np.sqrt((df_sample["depo_c_std"] ** 2).sum(dim="time")) / df_sample.time.size
-fig, ax = plt.subplots(1, 3, figsize=(9, 3), sharey=True, constrained_layout=True)
+fig, ax = plt.subplots(2, 4, figsize=(9, 6), sharey=True, constrained_layout=True)
 
-ax[0].plot(
-    (df_sample["ppol_r"].mean(dim="time") * df_sample.range**2).where(error < 0.003),
+ppol0 = (df_sample["ppol_r"].mean(dim="time") * df_sample.range**2).where(error < 0.003)
+ax[0, 0].plot(
+    ppol0,
     df_sample["range"],
     ".",
     label="original",
 )
-ax[0].plot(
-    (df_sample["ppol_c"].mean(dim="time") * df_sample.range**2).where(error < 0.003),
+ppol_c = (df_sample["ppol_c"].mean(dim="time") * df_sample.range**2).where(
+    error < 0.003
+)
+ax[0, 0].plot(
+    ppol_c,
     df_sample["range"],
     ".",
     label="corrected",
 )
-ax[0].set_xlim([2e-7, 2.5e-7])
-
-ax[1].plot(
-    (df_sample["xpol_r"].mean(dim="time") * df_sample.range**2).where(error < 0.003),
+ax[0, 0].set_xlim([2e-7, 2.5e-7])
+ax[0, 0].set_xlabel(r"$\mu_{ppol}$")
+ax[0, 0].legend(loc="upper right")
+ax[1, 0].plot(
+    np.abs(ppol0 - ppol_c) / ppol0,
     df_sample["range"],
     ".",
     label="original",
 )
-ax[1].plot(
-    (df_sample["xpol_c"].mean(dim="time") * df_sample.range**2).where(error < 0.003),
+ax[1, 0].set_xlim([0, 0.04])
+ax[1, 0].xaxis.set_major_formatter(mtick.PercentFormatter(1.0, decimals=0))
+ax[1, 0].set_xlabel(r"$\Delta\mu_{ppol}$")
+##########################################################
+xpol0 = (df_sample["xpol_r"].mean(dim="time") * df_sample.range**2).where(error < 0.003)
+ax[0, 1].plot(
+    xpol0,
+    df_sample["range"],
+    ".",
+    label="original",
+)
+
+xpol_c = (df_sample["xpol_c"].mean(dim="time") * df_sample.range**2).where(
+    error < 0.003
+)
+ax[0, 1].plot(
+    xpol_c,
     df_sample["range"],
     ".",
     label="corrected",
 )
-ax[1].set_xlim(right=5e-9)
+ax[0, 1].set_xlim(right=5e-9)
+ax[0, 1].set_xlabel(r"$\mu_{xpol}$")
+ax[0, 1].legend(loc="upper right")
+ax[1, 1].plot(
+    np.abs(xpol0 - xpol_c) / xpol0,
+    df_sample["range"],
+    ".",
+)
+ax[1, 1].set_xlim([0, 0.8])
+ax[1, 1].xaxis.set_major_formatter(mtick.PercentFormatter(1.0))
+ax[1, 1].set_xlabel(r"$\Delta\mu_{xpol}$")
 
-ax[2].plot(
-    (df_sample["xpol_r"].mean(dim="time") / df_sample["ppol_r"].mean(dim="time")).where(
-        error < 0.003
-    ),
+###################################################
+beta0 = (df_sample["xpol_r"].mean(dim="time") * df_sample.range**2).where(
+    error < 0.003
+) + (df_sample["ppol_r"].mean(dim="time") * df_sample.range**2).where(error < 0.003)
+beta_new = (df_sample["xpol_c"].mean(dim="time") * df_sample.range**2).where(
+    error < 0.003
+) + (df_sample["ppol_c"].mean(dim="time") * df_sample.range**2).where(error < 0.003)
+
+ax[0, 2].plot(
+    beta0,
     df_sample["range"],
     ".",
     label="original",
 )
-ax[2].errorbar(
-    x=(
-        df_sample["xpol_c"].mean(dim="time") / df_sample["ppol_c"].mean(dim="time")
-    ).where(error < 0.003),
+ax[0, 2].plot(
+    beta_new,
+    df_sample["range"],
+    ".",
+    label="corrected",
+)
+ax[0, 2].set_xlim([2e-7, 2.5e-7])
+ax[0, 2].set_xlabel(r"$\mu_{\beta}$")
+ax[0, 2].legend(loc="upper right")
+ax[1, 2].plot(
+    np.abs(beta0 - beta_new) / beta0,
+    df_sample["range"],
+    ".",
+)
+ax[1, 2].set_xlim([0, 0.04])
+ax[1, 2].xaxis.set_major_formatter(mtick.PercentFormatter(1.0, decimals=0))
+ax[1, 2].set_xlabel(r"$\Delta\mu_{\beta}$")
+#########################################
+depo0 = (
+    df_sample["xpol_r"].mean(dim="time") / df_sample["ppol_r"].mean(dim="time")
+).where(error < 0.003)
+ax[0, 3].plot(
+    depo0,
+    df_sample["range"],
+    ".",
+    label="original",
+)
+
+depo_c = (
+    df_sample["xpol_c"].mean(dim="time") / df_sample["ppol_c"].mean(dim="time")
+).where(error < 0.003)
+ax[0, 3].errorbar(
+    x=depo_c,
     y=df_sample.range,
     xerr=error,
     fmt=".",
     label="corrected",
 )
 
-ax[2].set_xlim([-0.005, 0.015])
-
+ax[0, 3].set_xlim([-0.005, 0.015])
+ax[0, 3].set_xlabel(r"$\delta$")
+ax[0, 3].legend(loc="upper right")
+ax[1, 3].plot(
+    np.abs(depo0 - depo_c) / depo0,
+    df_sample["range"],
+    ".",
+)
+ax[1, 3].set_xlim([0, 0.8])
+ax[1, 3].xaxis.set_major_formatter(mtick.PercentFormatter(1.0))
+ax[1, 3].set_xlabel(r"$\Delta\delta$")
+#####################
 for n, ax_ in enumerate(ax.flatten()):
     ax_.grid()
-    ax_.legend(loc="upper right")
     ax_.text(
         -0.0,
         1.03,
@@ -195,11 +270,9 @@ for n, ax_ in enumerate(ax.flatten()):
         transform=ax_.transAxes,
         size=12,
     )
-ax[0].set_ylim([0, 400])
-ax[0].set_ylabel("Range (m)")
-ax[0].set_xlabel(r"$\mu_{ppol}$")
-ax[1].set_xlabel(r"$\mu_{xpol}$")
-ax[2].set_xlabel(r"$\delta$")
+ax[0, 0].set_ylim([0, 400])
+ax[0, 0].set_ylabel("Range (m)")
+ax[1, 0].set_ylabel("Range (m)")
 fig.savefig(
     "/media/viet/CL61/img/studycase_depo_profile.png", bbox_inches="tight", dpi=600
 )
