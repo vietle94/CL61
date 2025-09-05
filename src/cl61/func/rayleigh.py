@@ -1,0 +1,80 @@
+import numpy as np
+
+"""
+Bucholtz, A. Rayleigh-scattering calculations for the terrestrial atmosphere.
+Applied Optics, Vol. 34, No. 15, 2766-2773 (1995)
+
+https://doi.org/10.1364/AO.34.002765
+
+"""
+
+
+def molecular_backscatter(angle, temperature, pressure):
+    """
+    Calculate molecular backscatter coefficient at 910.55nm.
+
+    Parameters:
+        temperature (np.ndarray): Temperature in Kelvin [K]
+        pressure (np.ndarray): Pressure in hPa [hPa]
+
+    Returns:
+        molBsc (np.ndarray): Molecular backscatter coefficient [km^-1 sr^-1]
+    """
+    y = 1.384e-2
+    P_ray = 3 / (4 * (1 + 2 * y)) * ((1 + 3 * y) + (1 - y) * np.cos(angle) ** 2)
+    molBsc = (
+        1.5e-3 * (pressure / 1013.25) * (288.15 / temperature) / (4 * np.pi) * P_ray
+    )
+    return molBsc
+
+
+""" Calculate atmospheric molecular depolarization ratio
+Tomasi, C., Vitale, V., Petkov, B., Lupi, A. & Cacciari, A. Improved
+algorithm for calculations of Rayleigh-scattering optical depth in standard
+atmospheres. Applied Optics 44, 3320 (2005).
+
+https://doi.org/10.1364/AO.44.003320
+
+"""
+
+
+def f1(wavelength):
+    return 1.034 + 3.17 * 1e-4 * wavelength ** (-2)
+
+
+def f2(wavelength):
+    return 1.096 + 1.385 * 1e-3 * wavelength ** (-2) + 1.448 * 1e-4 * wavelength ** (-4)
+
+
+def f(wavelength, C, water_over_air):
+    """
+    Calculate King's factor.
+
+    Parameters:
+        wavelength : wavelength [um]
+        C: CO2 concentration [ppmv]
+        water_over_air: Water vapor over air pressure ratio
+
+    Returns:
+        king_factor : King's factor
+    """
+    numerator = (
+        0.78084 * f1(wavelength)
+        + 0.20946 * f2(wavelength)
+        + 0.00934 * 1
+        + 1e-6 * C * 1.15
+        + water_over_air * 1.001
+    )
+    denominator = 0.999640 + 1e-6 * C + water_over_air
+    return numerator / denominator
+
+
+def depo(king_factor):
+    return (6 * king_factor - 6) / (7 * king_factor + 3)
+
+
+def humidity_conversion(specific_humidity):
+    """
+    Calculate water over air pressure ratio from specific humidity.
+    """
+    return 1 / (18 / 29 * (1 / specific_humidity - 1) + 1)
