@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.integrate import cumulative_trapezoid
 
 """
 Bucholtz, A. Rayleigh-scattering calculations for the terrestrial atmosphere.
@@ -78,3 +79,37 @@ def humidity_conversion(specific_humidity):
     Calculate water over air pressure ratio from specific humidity.
     """
     return 1 / (18 / 29 * (1 / specific_humidity - 1) + 1)
+
+
+def rayleigh_fitting(beta_profile, beta_mol, zmin, zmax):
+    """
+    Fit the backscatter profile to the molecular profile in a given height range.
+
+    Parameters:
+    - beta_profile: array-like
+        Measured backscatter profile [m^-1 sr^-1].
+    - beta_mol: array-like
+        Molecular backscatter profile [m^-1 sr^-1].
+    - zmin: float
+        Minimum height for fitting [m].
+    - zmax: float
+        Maximum height for fitting [m].
+
+    Returns:
+    - popt: tuple
+        Optimal parameters for the fitting.
+    - pcov: 2D array
+        Covariance of the optimal parameters.
+    """
+    # attenuated mol beta
+    att_beta_mol = beta_mol * np.exp(
+        -2 * cumulative_trapezoid(beta_mol * 8 / 3 * np.pi, beta_mol.height, initial=0)
+    )
+    # Select the fitting range
+    beta_profile_fit = beta_profile.sel(range=slice(zmin, zmax))
+    att_beta_mol_fit = att_beta_mol.sel(range=slice(zmin, zmax))
+
+    # Calibration factor
+    c = att_beta_mol_fit.sum() / beta_profile_fit.sum()
+
+    return c.values
