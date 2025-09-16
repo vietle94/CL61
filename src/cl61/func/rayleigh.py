@@ -101,15 +101,16 @@ def rayleigh_fitting(beta_profile, beta_mol, zmin, zmax):
     - pcov: 2D array
         Covariance of the optimal parameters.
     """
+    # Select the fitting range
+    beta_profile = beta_profile.sel(range=slice(zmin, zmax))
+    beta_mol = beta_mol.sel(range=slice(zmin, zmax))
+
     # attenuated mol beta
     att_beta_mol = beta_mol * np.exp(
         -2 * cumulative_trapezoid(beta_mol * 8 / 3 * np.pi, beta_mol.height, initial=0)
     )
-    # Select the fitting range
-    beta_profile_fit = beta_profile.sel(range=slice(zmin, zmax))
-    att_beta_mol_fit = att_beta_mol.sel(range=slice(zmin, zmax))
 
     # Calibration factor
-    c = att_beta_mol_fit.sum() / beta_profile_fit.sum()
+    c = att_beta_mol.sum() / beta_profile.sum()
 
     return c.values
