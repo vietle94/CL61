@@ -106,11 +106,38 @@ def rayleigh_fitting(beta_profile, beta_mol, zmin, zmax):
     beta_mol = beta_mol.sel(range=slice(zmin, zmax))
 
     # attenuated mol beta
-    att_beta_mol = beta_mol * np.exp(
-        -2 * cumulative_trapezoid(beta_mol * 8 / 3 * np.pi, beta_mol.height, initial=0)
-    )
+    # 
 
     # Calibration factor
-    c = att_beta_mol.sum() / beta_profile.sum()
+    # c = att_beta_mol.sum() / beta_profile.sum()
+    c = beta_mol.sum() / beta_profile.sum()
 
     return c.values
+
+
+def backward(ppol, mol_ppol, Sa, zref, z):
+    ppol = ppol.sel(range=slice(None, zref))
+    mol_ppol = mol_ppol.sel(range=slice(None, zref))
+    z = z.sel(range=slice(None, zref))
+    ppol = ppol[::-1]
+    mol_ppol = mol_ppol[::-1]
+    z = z[::-1]
+    Zb = ppol * np.exp(
+        2 * cumulative_trapezoid((Sa - 8 / 3 * np.pi) * mol_ppol, z, initial=0)
+    )
+    Nb = (ppol[0] / mol_ppol[0]).values + 2 * cumulative_trapezoid(
+        Sa * Zb, z, initial=0
+    )
+
+    beta_a = Zb / Nb - mol_ppol
+    return beta_a[::-1]
+
+
+def forward(ppol, mol_ppol, Sa, c, z):
+    Zb = ppol * np.exp(
+        -2 * cumulative_trapezoid((Sa - 8 / 3 * np.pi) * mol_ppol, z, initial=0)
+    )
+    Nb = c - 2 * cumulative_trapezoid(Sa * Zb, z, initial=0)
+
+    beta_a = Zb / Nb - mol_ppol
+    return beta_a
