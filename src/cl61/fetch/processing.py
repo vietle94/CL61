@@ -1,7 +1,6 @@
 import pandas as pd
 import requests
 from cl61.fetch.utils import process_metadata, response, process_metadata_child
-from cl61.func.calibration_cloud import calibration_etaS
 import xarray as xr
 import io
 import numpy as np
@@ -124,16 +123,27 @@ def sw_version(res):
     return False
 
 
+def convolve_1d(arr, kernel):
+    return np.convolve(arr, kernel, mode="same")
+
+
 def cloud_calibration(res):
     df, _ = response(res)
-    df = df.sel(range=slice(1000, 4000))
-    test = df.mean(dim="time")
-    res = np.convolve(test.p_pol, ref, mode="same")
+    df = df.sel(range=slice(None, 5000))
+    result = xr.apply_ufunc(
+        convolve_1d,
+        df.beta_att,
+        input_core_dims=[["range"]],  # Apply along 'lon'
+        kwargs={"kernel": ref},
+        output_core_dims=[["range"]],
+        vectorize=True,
+    )
+
     return pd.DataFrame(
         {
-            "datetime": [df.time[0].values],
-            "cross_correlation": [res.max()],
-            "etaS": [calibration_etaS(test).values],
-            "range": [df["range"].isel(range=np.argmax(res)).values],
+            "datetime": result.time.values,
+            "cross_correlation": result.max(dim="range").values,
+            "etaS": 1 / (2 * df.beta_att.sum(dim="range") * 4.8),
+            "range": result.idxmax(dim="range").values,
         }
     )
