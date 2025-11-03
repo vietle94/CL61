@@ -129,7 +129,7 @@ def convolve_1d(arr, kernel):
 
 def cloud_calibration(res):
     df, _ = response(res)
-    df = df.sel(range=slice(None, 5000))
+    df = df.sel(range=slice(100, 5000))
     result = xr.apply_ufunc(
         convolve_1d,
         df.beta_att,
