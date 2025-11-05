@@ -106,7 +106,7 @@ def rayleigh_fitting(beta_profile, beta_mol, zmin, zmax):
     beta_mol = beta_mol.sel(range=slice(zmin, zmax))
 
     # attenuated mol beta
-    # 
+    #
 
     # Calibration factor
     # c = att_beta_mol.sum() / beta_profile.sum()
@@ -122,6 +122,7 @@ def backward(ppol, mol_ppol, Sa, zref, z):
     ppol = ppol[::-1]
     mol_ppol = mol_ppol[::-1]
     z = z[::-1]
+    ppol[0] = mol_ppol[0]  # boundary condition after normalization
     Zb = ppol * np.exp(
         2 * cumulative_trapezoid((Sa - 8 / 3 * np.pi) * mol_ppol, z, initial=0)
     )
