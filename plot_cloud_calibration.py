@@ -77,7 +77,7 @@ fig.savefig(
 )
 
 # %%
-fig, ax = plt.subplots(4, 1, figsize=(9, 6), constrained_layout=True, sharex=True)
+fig, ax = plt.subplots(2, 2, figsize=(9, 6), sharex=True, sharey=True)
 for site, ax_ in zip(
     ["vehmasmaki", "hyytiala", "kenttarova", "lindenberg"],
     ax.flatten(),
@@ -131,6 +131,7 @@ ax_flat[3].axvspan(
     "2023-07-01", "2025-01-01", color="tab:brown", alpha=0.2, label="1.1.10"
 )
 ax_.set_xlim(right=pd.to_datetime("2024-12-31"))
+ax_.set_ylim(0.5, 2)
 for n, ax_ in enumerate(ax.flatten()):
     ax_.text(
         -0.0,
@@ -139,7 +140,14 @@ for n, ax_ in enumerate(ax.flatten()):
         transform=ax_.transAxes,
         size=12,
     )
-    ax_.legend(loc="upper left")
+    # ax_.legend(loc="upper left")
+    ax_.tick_params(axis="x", labelrotation=45)
+    ax_.yaxis.set_tick_params(labelleft=True)
+
+handles, labels = ax[0, 0].get_legend_handles_labels()
+fig.legend(handles, labels, loc="lower center", ncol=2, title="Firmware version")
+fig.subplots_adjust(bottom=0.2, hspace=0.3, wspace=0.42)
+
 fig.savefig(
     "/media/viet/CL61/img/calibration_factor_ts.png", bbox_inches="tight", dpi=600
 )
