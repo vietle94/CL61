@@ -6,7 +6,7 @@ from cl61.func.calibration_T import temperature_ref
 import matplotlib as mpl
 
 # %%
-site = "hyytiala"
+site = "kenttarova"
 files = glob.glob(f"/media/viet/CL61/calibration/{site}/merged/*.nc")
 df = xr.open_mfdataset(files)
 df_mean, df_std, df_count = temperature_ref(df)
@@ -22,9 +22,15 @@ my_c = mpl.colormaps["RdBu_r"](
     np.append(np.linspace(0, 0.4, n1), np.linspace(0.6, 1, n2))
 )
 plot_lim = {
-    "vehmasmaki": [5e-15, 1e-14],
-    "hyytiala": [5e-15, 3e-14],
-    "kenttarova": [2e-14, 8e-14],
+    "vehmasmaki": [25e-30, 1e-28],
+    "hyytiala": [25e-30, 9e-28],
+    "kenttarova": [4e-28, 64e-28],
+}
+
+plot_sub = {
+    "vehmasmaki": ["a", "b", "c", "e"],
+    "hyytiala": ["f", "g", "h", "i"],
+    "kenttarova": ["j", "k", "l", "m"],
 }
 # %%
 fig, ax = plt.subplots(2, 2, figsize=(6, 6), sharey=True)
@@ -36,7 +42,7 @@ for t, color in zip(t_valid, my_c):
         label=t,
     )
     ax[0, 1].plot(
-        df_std.sel(internal_temperature_bins=t).ppol_ref,
+        df_std.sel(internal_temperature_bins=t).ppol_ref ** 2,
         df_mean.range,
         color=color,
         label=t,
@@ -50,7 +56,7 @@ for t, color in zip(t_valid, my_c):
     )
 
     ax[1, 1].plot(
-        df_std.sel(internal_temperature_bins=t).xpol_ref,
+        df_std.sel(internal_temperature_bins=t).xpol_ref ** 2,
         df_mean.range,
         color=color,
         label=t,
@@ -64,15 +70,15 @@ ax[0, 1].set_xlim(plot_lim[site])
 ax[1, 1].set_xlim(plot_lim[site])
 
 ax[0, 0].set_xlabel(r"$\mu_{ppol/r²}$")
-ax[0, 1].set_xlabel(r"$\sigma_{ppol/r²}$")
+ax[0, 1].set_xlabel(r"$\sigma²_{ppol/r²}$")
 ax[1, 0].set_xlabel(r"$\mu_{xpol/r²}$")
-ax[1, 1].set_xlabel(r"$\sigma_{xpol/r²}$")
+ax[1, 1].set_xlabel(r"$\sigma²_{xpol/r²}$")
 
 ax[0, 0].set_ylabel("Range [m]")
 ax[1, 0].set_ylabel("Range [m]")
 fig.subplots_adjust(bottom=0.3, hspace=0.5)
 
-for ax_, lab in zip(ax.flatten(), ["i", "ii", "iii", "iv"]):
+for ax_, lab in zip(ax.flatten(), plot_sub[site]):
     ax_.text(
         -0.0,
         1.03,
@@ -105,9 +111,9 @@ my_c = mpl.colormaps["RdBu_r"](
     np.append(np.linspace(0, 0.4, n1), np.linspace(0.6, 1, n2))
 )
 plot_lim = {
-    "vehmasmaki": np.array([[-5e-14, 1.5e-13], [0.5e-14, 2.5e-14]]),
-    "kenttarova": np.array([[-2e-13, 1e-13], [2e-14, 8e-14]]),
-    "hyytiala": np.array([[-7e-13, 1e-13], [5e-15, 3e-14]]),
+    "vehmasmaki": np.array([[-5e-14, 1.5e-13], [0.25e-28, 6e-28]]),
+    "kenttarova": np.array([[-2e-13, 1e-13], [4e-28, 64e-28]]),
+    "hyytiala": np.array([[-7e-13, 1e-13], [25e-30, 3e-28]]),
 }
 
 # %%
@@ -120,7 +126,7 @@ for t, color in zip(t_valid, my_c):
         label=t,
     )
     ax[0, 1].plot(
-        df_std.sel(internal_temperature_bins=t).ppol_ref,
+        df_std.sel(internal_temperature_bins=t).ppol_ref ** 2,
         df_mean.range,
         color=color,
         label=t,
@@ -134,7 +140,7 @@ for t, color in zip(t_valid, my_c):
     )
 
     ax[1, 1].plot(
-        df_std.sel(internal_temperature_bins=t).xpol_ref,
+        df_std.sel(internal_temperature_bins=t).xpol_ref ** 2,
         df_mean.range,
         color=color,
         label=t,
@@ -148,16 +154,16 @@ ax[0, 1].set_xlim(plot_lim[site][1, :])
 ax[1, 1].set_xlim(plot_lim[site][1, :])
 
 ax[0, 0].set_xlabel(r"$\mu_{ppol/r²}$")
-ax[0, 1].set_xlabel(r"$\sigma_{ppol/r²}$")
+ax[0, 1].set_xlabel(r"$\sigma²_{ppol/r²}$")
 ax[1, 0].set_xlabel(r"$\mu_{xpol/r²}$")
-ax[1, 1].set_xlabel(r"$\sigma_{xpol/r²}$")
+ax[1, 1].set_xlabel(r"$\sigma²_{xpol/r²}$")
 
 ax[0, 0].set_ylim([0, 1000])
 ax[0, 0].set_ylabel("Range [m]")
 ax[1, 0].set_ylabel("Range [m]")
 fig.subplots_adjust(bottom=0.3, hspace=0.5)
 
-for ax_, lab in zip(ax.flatten(), ["i", "ii", "iii", "iv"]):
+for ax_, lab in zip(ax.flatten(), plot_sub[site]):
     ax_.text(
         -0.0,
         1.03,

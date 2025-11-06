@@ -118,12 +118,12 @@ ax_dict["mean_cal_x"].set_xlabel(r"$\mu_{xpol}$")
 #####################################################################
 
 ax_dict["std_case"].scatter(df_case_std.ppol_r**2, df_case_std.range, s=1)
-ax_dict["std_case"].set_xlabel(r"$\sigma²_{ppol}/r²$")
+ax_dict["std_case"].set_xlabel(r"$\sigma²_{ppol/r²}$")
 ax_dict["std_case"].set_ylabel("Range [km]")
 #####################################################################
 
 ax_dict["std_case_x"].scatter(df_case_std.xpol_r**2, df_case_std.range, s=1)
-ax_dict["std_case_x"].set_xlabel(r"$\sigma²_{xpol}/r²$")
+ax_dict["std_case_x"].set_xlabel(r"$\sigma²_{xpol/r²}$")
 ax_dict["std_case_x"].set_ylabel("Range [km]")
 #####################################################################
 
@@ -133,7 +133,7 @@ ax_dict["std_cal"].scatter(
     s=1,
 )
 
-ax_dict["std_cal"].set_xlabel(r"$\sigma²_{ppol}/r²$")
+ax_dict["std_cal"].set_xlabel(r"$\sigma²_{ppol/r²}$")
 
 #####################################################################
 ax_dict["std_cal_x"].scatter(
@@ -141,7 +141,7 @@ ax_dict["std_cal_x"].scatter(
     df_std.range,
     s=1,
 )
-ax_dict["std_cal_x"].set_xlabel(r"$\sigma²_{xpol}/r²$")
+ax_dict["std_cal_x"].set_xlabel(r"$\sigma²_{xpol/r²}$")
 
 #####################################################################
 
