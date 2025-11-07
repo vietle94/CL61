@@ -4,7 +4,6 @@ import glob
 from cl61.func import rayleigh
 import numpy as np
 from scipy.integrate import cumulative_trapezoid
-import pandas as pd
 from cl61.func.rayleigh import backward, forward
 from scipy.linalg import lstsq
 import string
