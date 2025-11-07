@@ -48,3 +48,24 @@ def raw(row, save_path):
             break
         if bad_file:
             return None
+
+
+def fetch_model(site, start_date, end_date, save_path):
+    """Download model data"""
+    url = "https://cloudnet.fmi.fi/api/model-files"
+    params = {
+        "dateFrom": start_date,
+        "dateTo": end_date,
+        "site": site,
+    }
+    print(params)
+    metadata = requests.get(url, params).json()
+    with ThreadPoolExecutor() as exe:
+        exe.map(raw_model, metadata, repeat(save_path))
+
+
+def raw_model(row, save_path):
+    res = requests.get(row["downloadUrl"])
+    file_name = save_path + "/" + row["filename"]
+    with open(file_name, "wb") as f:
+        f.write(res.content)
