@@ -66,8 +66,48 @@ my_date_dict = {
         "z1": 5900,
         "z2": 6400,
     },
+    "2024-04-30": {
+        "start_date": "2024-04-30",
+        "end_date": "2024-05-01",
+        "start_time": "20:00",
+        "end_time": "04:00",
+        "z1": 5400,
+        "z2": 5900,
+    },
+    "2024-06-25": {
+        "start_date": "2024-06-25",
+        "end_date": "2024-06-26",
+        "start_time": "20:00",
+        "end_time": "04:00",
+        "z1": 4800,
+        "z2": 5300,
+    },
+    "2024-08-07": {
+        "start_date": "2024-08-07",
+        "end_date": "2024-08-08",
+        "start_time": "20:00",
+        "end_time": "04:00",
+        "z1": 5700,
+        "z2": 6200,
+    },
+    "2024-10-28": {
+        "start_date": "2024-10-28",
+        "end_date": "2024-10-29",
+        "start_time": "20:00",
+        "end_time": "04:00",
+        "z1": 5500,
+        "z2": 6000,
+    },
+    "2024-12-30": {
+        "start_date": "2024-12-30",
+        "end_date": "2024-12-31",
+        "start_time": "20:00",
+        "end_time": "04:00",
+        "z1": 5600,
+        "z2": 6100,
+    },
 }
-my_date = my_date_dict["2024-02-08"]
+my_date = my_date_dict["2024-12-30"]
 
 # %%
 df = xr.open_mfdataset(
@@ -177,8 +217,8 @@ for z1 in np.arange(4000, h + 500, 100):
     print(z1, z2, a, np.abs(b - c))
 
 # %%
-z1 = 5900
-z2 = 6400
+z1 = 5600
+z2 = 6100
 zref = (z1 + z2) / 2
 
 pnorm = df_mean["beta_att_smooth"] * (
