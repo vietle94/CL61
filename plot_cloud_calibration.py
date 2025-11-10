@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import glob
-import matplotlib.dates as mdates
 import string
 import pandas as pd
 
@@ -21,6 +20,114 @@ def read_diag(site):
     diag = diag.reset_index(drop=True)
     return diag
 
+
+# %%
+vehmasmaki_rayleigh = pd.DataFrame(
+    {
+        "site": [
+            "vehmasmaki",
+            "vehmasmaki",
+            "vehmasmaki",
+            "vehmasmaki",
+            "vehmasmaki",
+            "vehmasmaki",
+            "vehmasmaki",
+            "vehmasmaki",
+            "vehmasmaki",
+            "vehmasmaki",
+            "vehmasmaki",
+            "vehmasmaki",
+        ],
+        "datetime": [
+            "2024-09-04",
+            "2024-07-21",
+            "2024-06-22",
+            "2024-05-08",
+            "2024-03-18",
+            "2023-10-20",
+            "2023-08-07",
+            "2023-06-15",
+            "2023-04-15",
+            "2023-02-10",
+            "2022-08-14",
+            "2022-06-24",
+        ],
+        "c": [1.05, 0.88, 1.01, 0.9, 1.06, 0.97, 1.88, 2.29, 0.89, 0.89, 1.22, 1.12],
+    }
+)
+
+lindenberg_rayleigh = pd.DataFrame(
+    {
+        "site": ["lindenberg", "lindenberg", "lindenberg", "lindenberg"],
+        "datetime": ["2024-03-16", "2024-01-09", "2023-10-17", "2023-09-10"],
+        "c": [1.35, 1.39, 1.30, 1.16],
+    }
+)
+
+kenttarova_rayleigh = pd.DataFrame(
+    {
+        "site": [
+            "kenttarova",
+            "kenttarova",
+            "kenttarova",
+            "kenttarova",
+            "kenttarova",
+            "kenttarova",
+            "kenttarova",
+            "kenttarova",
+        ],
+        "datetime": [
+            "2024-11-27",
+            "2024-09-15",
+            "2024-07-13",
+            "2024-05-08",
+            "2024-03-25",
+            "2024-01-24",
+            "2023-11-10",
+            "2023-07-02",
+        ],
+        "c": [0.91, 1.21, 1, 0.85, 0.91, 0.90, 1.02, 0.87],
+    }
+)
+
+hyytiala_rayleigh = pd.DataFrame(
+    {
+        "site": [
+            "hyytiala",
+            "hyytiala",
+            "hyytiala",
+            "hyytiala",
+            "hyytiala",
+            "hyytiala",
+            "hyytiala",
+            "hyytiala",
+            "hyytiala",
+            "hyytiala",
+            "hyytiala",
+        ],
+        "datetime": [
+            "2024-12-30",
+            "2024-10-28",
+            "2024-08-07",
+            "2024-04-30",
+            "2024-02-08",
+            "2024-01-01",
+            "2023-09-17",
+            "2023-07-11",
+            "2023-05-13",
+            "2023-03-31",
+            "2023-01-01",
+        ],
+        "c": [1.25, 1.26, 1.22, 1.23, 1.25, 1.31, 1.57, 1.73, 1.11, 1.21, 1.30],
+    }
+)
+
+# %%
+rayleigh_data = pd.concat(
+    [vehmasmaki_rayleigh, lindenberg_rayleigh, kenttarova_rayleigh, hyytiala_rayleigh],
+    ignore_index=True,
+)
+rayleigh_data["datetime"] = pd.to_datetime(rayleigh_data["datetime"])
 
 # %%
 fig, axes = plt.subplots(4, 1, figsize=(9, 6), constrained_layout=True, sharex=True)
@@ -91,6 +198,9 @@ for site, ax_ in zip(
     diag["month_year"] = diag["datetime"].dt.to_period("M")
     diag = diag.groupby(diag.month_year)["laser_power_percent"].mean()
     diag = diag.reset_index()
+
+    rayleigh = rayleigh_data[rayleigh_data["site"] == site]
+
     ax_.plot(
         cloud["datetime"],
         cloud["calibration_factor"],
@@ -107,6 +217,9 @@ for site, ax_ in zip(
         ".-",
         color="C1",
     )
+
+    ax_.plot(rayleigh["datetime"], rayleigh["c"], "x", color="C0")
+
     ax_2.set_ylabel("Laser power (%)", color="C1")
     ax_2.tick_params(axis="y", labelcolor="C1")
     ax_2.set_ylim(0, 105)
