@@ -179,7 +179,7 @@ ax[0].plot(
     label=r"$^\parallel\beta^'_{mol}$",
 )
 ax[1].plot(klett, klett.range)
-ax[1].set_xlabel(r"$^\beta_{aerosol}$")
+ax[1].set_xlabel(r"$\beta_{aerosol}$")
 ax[0].set_ylabel("Height [m]")
 ax[0].set_ylim(None, 14000)
 ax[0].set_xlabel(r"$\beta^'$")

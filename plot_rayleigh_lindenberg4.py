@@ -34,7 +34,7 @@ aod["datetime"] = aod["Date(dd:mm:yyyy)"] + " " + aod["Time(hh:mm:ss)"]
 aod["datetime"] = pd.to_datetime(aod["datetime"], format="%d:%m:%Y %H:%M:%S")
 aod = aod.set_index("datetime")
 ###################################################################################
-# bad aod because only available at 10am, 
+# bad aod because only available at 10am,
 # when there is definitely different boundary aerosol
 aod_ceilo = np.interp(
     910.55,
@@ -199,7 +199,7 @@ ax[0].plot(
     label=r"$^\parallel\beta^'_{mol}$",
 )
 ax[1].plot(klett, klett.range)
-ax[1].set_xlabel(r"$^\beta_{aerosol}$")
+ax[1].set_xlabel(r"$\beta_{aerosol}$")
 ax[0].set_ylabel("Height [m]")
 ax[0].set_ylim(None, 14000)
 ax[0].set_xlabel(r"$\beta^'$")
