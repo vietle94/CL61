@@ -1,6 +1,7 @@
 import numpy as np
 import xarray as xr
 import pywt
+import glob
 
 
 def noise_filter(profile, wavelet="bior1.5"):
@@ -104,3 +105,12 @@ def noise_filter_std(profile, wavelet="bior2.2"):
     filtered = pywt.iswt(coeff, wavelet)
     filtered = filtered[(n_pad - n_pad // 2) : len(profile) + (n_pad - n_pad // 2)]
     return filtered
+
+
+def temperature_calibration(path_in, path_out):
+    files = glob.glob(path_in + "/*.nc")
+    df = xr.open_mfdataset(files)
+    df_mean, df_std, df_count = temperature_ref(df)
+    df_mean.drop_vars(["p_pol", "x_pol"]).to_netcdf(path_out + "/calibration_mean.nc")
+    df_std.drop_vars(["p_pol", "x_pol"]).to_netcdf(path_out + "/calibration_std.nc")
+    df_count.drop_vars(["p_pol", "x_pol"]).to_netcdf(path_out + "/calibration_count.nc")
