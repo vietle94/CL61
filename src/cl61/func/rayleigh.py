@@ -142,3 +142,34 @@ def forward(ppol, mol_ppol, Sa, c, z):
 
     beta_a = Zb / Nb - mol_ppol
     return beta_a
+
+
+def backscatter_ratio(beta_aerosol, beta_mol):
+    """
+    Calculate backscatter ratio.
+
+    Parameters:
+        beta_total (np.ndarray): Total backscatter coefficient [km^-1 sr^-1]
+        beta_mol (np.ndarray): Molecular backscatter coefficient [km^-1 sr^-1]
+
+    Returns:
+        bsr (np.ndarray): Backscatter ratio
+    """
+    return (beta_aerosol + beta_mol) / beta_mol
+
+
+def depo_aerosol(depo_volume, depo_mol, beta_ratio):
+    """
+    Calculate aerosol depolarization ratio.
+
+    Parameters:
+        depo_volume (np.ndarray): Volume depolarization ratio
+        depo_mol (np.ndarray): Molecular depolarization ratio
+        beta_ratio (np.ndarray): Backscatter ratio
+
+    Returns:
+        depo_aer (np.ndarray): Aerosol depolarization ratio
+    """
+    term1 = (1 + depo_mol) * depo_volume * beta_ratio - (1 + depo_volume) * depo_mol
+    term2 = (1 + depo_mol) * beta_ratio - (1 + depo_volume)
+    return term1 / term2
