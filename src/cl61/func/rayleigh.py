@@ -115,33 +115,49 @@ def rayleigh_fitting(beta_profile, beta_mol, zmin, zmax):
     return c.values
 
 
-def backward(ppol, mol_ppol, Sa, zref, z):
-    ppol = ppol.sel(range=slice(None, zref))
-    mol_ppol = mol_ppol.sel(range=slice(None, zref))
+def backward(beta, beta_mol, Sa, zref, z):
+    beta = beta.sel(range=slice(None, zref))
+    beta_mol = beta_mol.sel(range=slice(None, zref))
     z = z.sel(range=slice(None, zref))
-    ppol = ppol[::-1]
-    mol_ppol = mol_ppol[::-1]
+    beta = beta[::-1]
+    beta_mol = beta_mol[::-1]
     z = z[::-1]
-    ppol[0] = mol_ppol[0]  # boundary condition after normalization
-    Zb = ppol * np.exp(
-        2 * cumulative_trapezoid((Sa - 8 / 3 * np.pi) * mol_ppol, z, initial=0)
+    beta[0] = beta_mol[0]  # boundary condition after normalization
+    Zb = beta * np.exp(
+        2 * cumulative_trapezoid((Sa - 8 / 3 * np.pi) * beta_mol, z, initial=0)
     )
-    Nb = (ppol[0] / mol_ppol[0]).values + 2 * cumulative_trapezoid(
+    Nb = (beta[0] / beta_mol[0]).values + 2 * cumulative_trapezoid(
         Sa * Zb, z, initial=0
     )
 
-    beta_a = Zb / Nb - mol_ppol
+    beta_a = Zb / Nb - beta_mol
     return beta_a[::-1]
 
 
-def forward(ppol, mol_ppol, Sa, c, z):
-    Zb = ppol * np.exp(
-        -2 * cumulative_trapezoid((Sa - 8 / 3 * np.pi) * mol_ppol, z, initial=0)
+def forward(beta, beta_mol, Sa, c, z):
+    Zb = beta * np.exp(
+        -2 * cumulative_trapezoid((Sa - 8 / 3 * np.pi) * beta_mol, z, initial=0)
     )
     Nb = c - 2 * cumulative_trapezoid(Sa * Zb, z, initial=0)
 
-    beta_a = Zb / Nb - mol_ppol
+    beta_a = Zb / Nb - beta_mol
     return beta_a
+
+
+def forward_sigma(beta, beta_mol, Sa, c, z, sigma_beta):
+    term1 = (
+        forward(beta + sigma_beta, beta_mol, Sa, c, z)
+        - forward(beta - sigma_beta, beta_mol, Sa, c, z)
+    ) / 2
+    term2 = (
+        forward(beta, beta_mol, Sa, c * 0.9, z)
+        - forward(beta, beta_mol, Sa, c * 1.1, z)
+    ) / 2
+    term3 = (
+        forward(beta, beta_mol, Sa + 10, c, z) - forward(beta, beta_mol, Sa - 10, c, z)
+    ) / 2
+    result = np.sqrt(term1**2 + term2**2 + term3**2)
+    return result
 
 
 def backscatter_ratio(beta_aerosol, beta_mol):
@@ -173,3 +189,28 @@ def depo_aerosol(depo_volume, depo_mol, beta_ratio):
     term1 = (1 + depo_mol) * depo_volume * beta_ratio - (1 + depo_volume) * depo_mol
     term2 = (1 + depo_mol) * beta_ratio - (1 + depo_volume)
     return term1 / term2
+
+
+def depo_aersosol_sigma(
+    depo_volume, depo_mol, beta_ratio, sigma_depo_volume, sigma_beta_ratio
+):
+    """
+    Calculate aerosol depolarization ratio using extinction ratio.
+
+    Parameters:
+        depo_volume (np.ndarray): Volume depolarization ratio
+        depo_mol (np.ndarray): Molecular depolarization ratio
+        sigma_ratio (np.ndarray): Extinction ratio
+
+    Returns:
+        depo_aer (np.ndarray): Aerosol depolarization ratio
+    """
+    term1_nominator = (1 + depo_mol) ** 2 * beta_ratio * (beta_ratio - 1)
+    term1_denominator = ((1 + depo_mol) * beta_ratio - (1 + depo_volume)) ** 2
+    term2_nominator = (1 + depo_mol) * (1 + depo_volume) * (depo_mol - depo_volume)
+    term2_denominator = ((1 + depo_mol) * beta_ratio - (1 + depo_volume)) ** 2
+    result = np.sqrt(
+        (term1_nominator / term1_denominator) * sigma_depo_volume**2
+        + (term2_nominator / term2_denominator) * sigma_beta_ratio**2
+    )
+    return result
