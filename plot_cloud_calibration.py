@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 import glob
 import string
 import pandas as pd
@@ -258,8 +259,45 @@ for n, ax_ in enumerate(ax.flatten()):
     ax_.yaxis.set_tick_params(labelleft=True)
 
 handles, labels = ax[0, 0].get_legend_handles_labels()
-fig.legend(handles, labels, loc="lower center", ncol=2, title="Firmware version")
-fig.subplots_adjust(bottom=0.2, hspace=0.3, wspace=0.42)
+fig.legend(handles, labels, loc="lower left", ncol=2, title="Firmware version")
+# Create a second legend that explains line/marker styles
+line_legend_handles = [
+    Line2D(
+        [0],
+        [0],
+        marker=".",
+        color="C0",
+        linestyle="-",
+        label="Cloud calibration",
+        markersize=6,
+    ),
+    Line2D(
+        [0],
+        [0],
+        marker="x",
+        color="C0",
+        linestyle="None",
+        label="Rayleigh calibration",
+        markersize=6,
+    ),
+    Line2D(
+        [0],
+        [0],
+        marker=".",
+        color="C1",
+        linestyle="-",
+        label="Laser power (%)",
+        markersize=6,
+    ),
+    Line2D([0], [0], color="grey", linestyle="--", label="Reference c = 1"),
+]
+fig.legend(
+    line_legend_handles,
+    [h.get_label() for h in line_legend_handles],
+    loc="lower right",
+    ncol=2,
+)
+fig.subplots_adjust(left=-0.1, bottom=0.2, hspace=0.3, wspace=0.42, right=0.95)
 
 fig.savefig(
     "/media/viet/CL61/img/calibration_factor_ts.png", bbox_inches="tight", dpi=600
