@@ -100,21 +100,21 @@ ax_dict["mean_case_x"].set_xlabel(r"$\mu_{xpol}$")
 #####################################################################
 
 ax_dict["mean_cal"].scatter(
-    df_mean.sel(internal_temperature_bins=18).p_pol,
+    df_mean.sel(internal_temperature_bins=18).p_pol / (df_mean.range**2),
     df_mean.range,
     s=1,
     c="C0",
 )
-ax_dict["mean_cal"].set_xlabel(r"$\mu_{ppol}$")
+ax_dict["mean_cal"].set_xlabel(r"$\mu_{ppol}/r²$")
 #####################################################################
 
 ax_dict["mean_cal_x"].scatter(
-    df_mean.sel(internal_temperature_bins=18).x_pol,
+    df_mean.sel(internal_temperature_bins=18).x_pol / (df_mean.range**2),
     df_mean.range,
     s=1,
     c="C0",
 )
-ax_dict["mean_cal_x"].set_xlabel(r"$\mu_{xpol}$")
+ax_dict["mean_cal_x"].set_xlabel(r"$\mu_{xpol}/r²$")
 #####################################################################
 
 ax_dict["std_case"].scatter(df_case_std.ppol_r**2, df_case_std.range, s=1)
@@ -145,12 +145,12 @@ ax_dict["std_cal_x"].set_xlabel(r"$\sigma²_{xpol/r²}$")
 
 #####################################################################
 
-for x in ["mean_case", "mean_case_x", "mean_cal", "mean_cal_x"]:
+for x in ["mean_case", "mean_case_x"]:
     ax_dict[x].set_xlim(-5e-7, 5e-7)
 # ax_dict["mean_case"].set_xlim(-5e-7, 5e-7)
 # ax_dict["mean_case_x"].set_xlim(-5e-7, 5e-7)
-# ax_dict["mean_cal"].set_xlim(-1e-14, 10e-14)
-# ax_dict["mean_cal_x"].set_xlim(-1e-14, 10e-14)
+ax_dict["mean_cal"].set_xlim(-1e-14, 10e-14)
+ax_dict["mean_cal_x"].set_xlim(-1e-14, 10e-14)
 
 for x in ["std_case", "std_case_x", "std_cal", "std_cal_x"]:
     ax_dict[x].set_xlim(4e-28, 36e-28)
@@ -169,7 +169,6 @@ for n, ax_ in enumerate(ax_dict):
         FuncFormatter(lambda x, pos: f"{x / 1000:.0f}")
     )
     ax_dict[ax_].set_ylim(0, 14000)
-
 fig.savefig(
     "/media/viet/CL61/img/solar_example.png",
     dpi=600,
