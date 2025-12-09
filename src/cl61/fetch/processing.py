@@ -5,8 +5,10 @@ import xarray as xr
 import io
 import numpy as np
 import os
+import importlib.resources
 
-ref = np.load("cal_ref.npy")
+with importlib.resources.files("cl61.fetch").joinpath("cal_ref.npy").open("rb") as f:
+    ref = np.load(f)
 
 
 def fetch_processing(func, site, start_date, end_date, save_path):
@@ -139,11 +141,23 @@ def cloud_calibration(res):
         vectorize=True,
     )
 
+    result2 = xr.apply_ufunc(  # calculate sum beta in-cloud
+        convolve_1d,
+        df.beta_att,
+        input_core_dims=[["range"]],  # Apply along 'lon'
+        kwargs={"kernel": ref > 1e-5},
+        output_core_dims=[["range"]],
+        vectorize=True,
+    )
+    range_max = result.idxmax(dim="range").values
+    sum_beta = df.beta_att.sum(dim="range")
+    cloud_beta_sum = result2.sel(range=xr.DataArray(range_max, dims="time"))
     return pd.DataFrame(
         {
             "datetime": result.time.values,
             "cross_correlation": result.max(dim="range").values,
-            "etaS": 1 / (2 * df.beta_att.sum(dim="range") * 4.8),
-            "range": result.idxmax(dim="range").values,
+            "etaS": 1 / (2 * sum_beta * 4.8),
+            "range": range_max,
+            "cloud_beta_percent": cloud_beta_sum / sum_beta,
         }
     )
