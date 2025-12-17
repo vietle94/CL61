@@ -81,7 +81,7 @@ for ax, site in zip(
     p = ax.scatter(
         df["datetime"], (df["co_std"] ** 2) * df["integration"], alpha=0.5, s=1
     )
-    ax.set_ylabel(r"$\sigma²_{ppol/r^2} \times t$", color="C0")
+    ax.set_ylabel(r"$\sigma²_{ppol/r^2} \times t$ [a.u.]", color="C0")
     ax.set_yscale("log")
     ax.tick_params(axis="y", labelcolor="C0")
     ax.set_ylim(top=1e-24)
@@ -89,7 +89,7 @@ for ax, site in zip(
     p = ax1.scatter(
         diag.datetime, diag["laser_power_percent"], alpha=0.5, s=1, color="C1"
     )
-    ax1.set_ylabel("Laser power (%)", color="C1")
+    ax1.set_ylabel("Laser power [%]", color="C1")
     ax1.tick_params(axis="y", labelcolor="C1")
     ax1.grid()
     ax.grid()

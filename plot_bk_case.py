@@ -33,13 +33,13 @@ p = ax[0, 0].pcolormesh(
     df["time"], df["range"], df["p_pol"].T, norm=LogNorm(vmin=1e-7, vmax=1e-4)
 )
 cbar = fig.colorbar(p, ax=ax[0, 0])
-cbar.ax.set_ylabel("ppol")
+cbar.ax.set_ylabel("$ppol$ [a.u.]")
 
 p = ax[0, 1].pcolormesh(
     df["time"], df["range"], df["x_pol"].T, norm=LogNorm(vmin=1e-7, vmax=1e-4)
 )
 cbar = fig.colorbar(p, ax=ax[0, 1])
-cbar.ax.set_ylabel("xpol")
+cbar.ax.set_ylabel("$xpol$ [a.u.]")
 
 p = ax[1, 0].pcolormesh(
     df["time"],
@@ -48,7 +48,7 @@ p = ax[1, 0].pcolormesh(
     norm=LogNorm(vmin=1e-7, vmax=1e-4),
 )
 cbar = fig.colorbar(p, ax=ax[1, 0])
-cbar.ax.set_ylabel("ppol")
+cbar.ax.set_ylabel("$ppol$ [a.u.]")
 
 p = ax[1, 1].pcolormesh(
     df["time"],
@@ -57,7 +57,7 @@ p = ax[1, 1].pcolormesh(
     norm=LogNorm(vmin=1e-7, vmax=1e-4),
 )
 cbar = fig.colorbar(p, ax=ax[1, 1])
-cbar.ax.set_ylabel("xpol")
+cbar.ax.set_ylabel("$xpol$ [a.u.]")
 ax[0, 0].set_xlim(df.time.values[0], df.time.values[-1] + pd.Timedelta(minutes=5))
 
 for x in grp_mean.range_bins.values:
@@ -91,10 +91,10 @@ for x in grp_mean.range_bins.values:
     )
 ax[0, 0].set_ylabel("Range [m]")
 ax[1, 0].set_ylabel("Range [m]")
-ax[2, 0].set_ylabel(r"$\mu_{ppol/r²}$")
-ax[2, 1].set_ylabel(r"$\mu_{xpol/r²}$")
-ax[3, 0].set_ylabel(r"$\sigma²_{ppol/r²}$")
-ax[3, 1].set_ylabel(r"$\sigma²_{xpol/r²}$")
+ax[2, 0].set_ylabel(r"$\mu_{ppol/r²}$ [a.u.]")
+ax[2, 1].set_ylabel(r"$\mu_{xpol/r²}$ [a.u.]")
+ax[3, 0].set_ylabel(r"$\sigma²_{ppol/r²}$ [a.u.]")
+ax[3, 1].set_ylabel(r"$\sigma²_{xpol/r²}$ [a.u.]")
 
 handles, labels = ax[3, 1].get_legend_handles_labels()
 fig.legend(handles, labels, ncol=6, loc="outside lower center")

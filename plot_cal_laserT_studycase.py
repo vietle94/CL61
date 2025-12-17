@@ -18,8 +18,6 @@ noise = df.sel(
         pd.to_datetime("2023-09-26T111500"), pd.to_datetime("2023-09-26T161000")
     ),
 ).p_pol
-noise_mean = noise.mean(dim="time")
-noise_centered = noise - noise_mean
 # %%
 fft = ShortTimeFFT(
     win=get_window("hamm", 256),
@@ -27,7 +25,7 @@ fft = ShortTimeFFT(
     fs=10,
 )
 
-f_noise = fft.stft(noise_centered.values, axis=0)
+f_noise = fft.stft(noise.values, axis=0)
 mag_noise = np.abs(f_noise)
 phase_noise = np.angle(f_noise)
 
@@ -46,16 +44,13 @@ f_noise_filtered = mag_noise_filtered * np.exp(1j * phase_noise)
 noise_filtered = np.real(
     fft.istft(f_noise_filtered, k1=noise.shape[0], f_axis=0, t_axis=2)
 )
-noise_filtered = noise_filtered + noise_mean.values
 
 # %%
 df = xr.open_mfdataset(glob.glob("/media/viet/CL61/studycase/kenttarova/20230926/*.nc"))
 
 # %%
 signal = df.sel(range=slice(None, 300)).p_pol
-signal_mean = signal.mean(dim="time")
-signal_centered = signal - signal_mean
-f_signal = fft.stft(signal_centered.values, axis=0)
+f_signal = fft.stft(signal.values, axis=0)
 mag_signal = np.abs(f_signal)
 phase_signal = np.angle(f_signal)
 
@@ -71,12 +66,10 @@ f_signal_filtered = mag_signal_filtered * np.exp(1j * phase_signal)
 signal_filtered = np.real(
     fft.istft(f_signal_filtered, k1=signal.shape[0], f_axis=0, t_axis=2)
 )
-ppol_filtered = signal_filtered + signal_mean.values
+ppol_filtered = signal_filtered
 
 signal = df.sel(range=slice(None, 300)).x_pol
-signal_mean = signal.mean(dim="time")
-signal_centered = signal - signal_mean
-f_signal = fft.stft(signal_centered.values, axis=0)
+f_signal = fft.stft(signal.values, axis=0)
 mag_signal = np.abs(f_signal)
 phase_signal = np.angle(f_signal)
 
@@ -92,7 +85,7 @@ f_signal_filtered = mag_signal_filtered * np.exp(1j * phase_signal)
 signal_filtered = np.real(
     fft.istft(f_signal_filtered, k1=signal.shape[0], f_axis=0, t_axis=2)
 )
-xpol_filtered = signal_filtered + signal_mean.values
+xpol_filtered = signal_filtered
 
 # %%
 fig, ax = plt.subplots(
@@ -141,9 +134,7 @@ cbar.ax.set_ylabel("xpol")
 df = xr.open_mfdataset(glob.glob("/media/viet/CL61/studycase/kenttarova/20231002/*.nc"))
 
 signal = df.sel(range=slice(None, 300)).p_pol
-signal_mean = signal.mean(dim="time")
-signal_centered = signal - signal_mean
-f_signal = fft.stft(signal_centered.values, axis=0)
+f_signal = fft.stft(signal.values, axis=0)
 mag_signal = np.abs(f_signal)
 phase_signal = np.angle(f_signal)
 
@@ -159,12 +150,10 @@ f_signal_filtered = mag_signal_filtered * np.exp(1j * phase_signal)
 signal_filtered = np.real(
     fft.istft(f_signal_filtered, k1=signal.shape[0], f_axis=0, t_axis=2)
 )
-ppol_filtered = signal_filtered + signal_mean.values
+ppol_filtered = signal_filtered
 
 signal = df.sel(range=slice(None, 300)).x_pol
-signal_mean = signal.mean(dim="time")
-signal_centered = signal - signal_mean
-f_signal = fft.stft(signal_centered.values, axis=0)
+f_signal = fft.stft(signal.values, axis=0)
 mag_signal = np.abs(f_signal)
 phase_signal = np.angle(f_signal)
 
@@ -180,7 +169,7 @@ f_signal_filtered = mag_signal_filtered * np.exp(1j * phase_signal)
 signal_filtered = np.real(
     fft.istft(f_signal_filtered, k1=signal.shape[0], f_axis=0, t_axis=2)
 )
-xpol_filtered = signal_filtered + signal_mean.values
+xpol_filtered = signal_filtered
 
 p = ax[0, 1].pcolormesh(
     signal.time.values,
@@ -242,3 +231,5 @@ for n, ax_ in enumerate(ax.flatten()):
 fig.savefig(
     "/media/viet/CL61/img/calibration_fft_studycase.png", bbox_inches="tight", dpi=600
 )
+
+# %%

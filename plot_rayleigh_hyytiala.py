@@ -107,7 +107,7 @@ my_date_dict = {
         "z2": 6100,
     },
 }
-my_date = my_date_dict["2024-12-30"]
+my_date = my_date_dict["2023-07-11"]
 
 # %%
 df = xr.open_mfdataset(
@@ -147,7 +147,7 @@ model = model[["temperature", "pressure", "q"]]
 model = model.drop_vars("level")
 model = model.interp(height=df_mean.range)
 mol_scatter = rayleigh.molecular_backscatter(
-    2 * np.pi,
+    np.pi,
     model["temperature"],
     model["pressure"] / 100,  # Pa to hPa
 )

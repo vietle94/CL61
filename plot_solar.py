@@ -38,7 +38,7 @@ model = model.drop_vars("level")
 model = model.sel(height=slice(None, 15000))
 model = model.interp(height=df_mean.range)
 mol_scatter = rayleigh.molecular_backscatter(
-    2 * np.pi,
+    np.pi,
     model["temperature"],
     model["pressure"] / 100,  # Pa to hPa
 )
@@ -63,7 +63,7 @@ p = ax_dict["time"].pcolormesh(
     df_case_full["p_pol"].T,
     norm=LogNorm(vmin=1e-7, vmax=1e-4),
 )
-fig.colorbar(p, ax=ax_dict["time"], label=r"$ppol$")
+fig.colorbar(p, ax=ax_dict["time"], label=r"$ppol$ [a.u.]")
 ax_dict["time"].xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
 ax_dict["time"].xaxis.set_major_locator(mdates.HourLocator(interval=1))
 ax_dict["time"].set_ylabel("Range [km]")
@@ -80,7 +80,7 @@ ax_dict["mean_case"].scatter(
     c="C3",
 )
 
-ax_dict["mean_case"].set_xlabel(r"$\mu_{ppol}$")
+ax_dict["mean_case"].set_xlabel(r"$\mu_{ppol}$ [a.u.]")
 ax_dict["mean_case"].set_ylabel("Range [km]")
 ax_dict["mean_case"].legend(loc="upper right")
 ##################################################################
@@ -96,7 +96,7 @@ ax_dict["mean_case_x"].scatter(
     c="C3",
 )
 ax_dict["mean_case_x"].legend(loc="upper right")
-ax_dict["mean_case_x"].set_xlabel(r"$\mu_{xpol}$")
+ax_dict["mean_case_x"].set_xlabel(r"$\mu_{xpol}$ [a.u.]")
 #####################################################################
 
 ax_dict["mean_cal"].scatter(
@@ -105,7 +105,7 @@ ax_dict["mean_cal"].scatter(
     s=1,
     c="C0",
 )
-ax_dict["mean_cal"].set_xlabel(r"$\mu_{ppol}/r²$")
+ax_dict["mean_cal"].set_xlabel(r"$\mu_{ppol}/r²$ [a.u.]")
 #####################################################################
 
 ax_dict["mean_cal_x"].scatter(
@@ -114,16 +114,16 @@ ax_dict["mean_cal_x"].scatter(
     s=1,
     c="C0",
 )
-ax_dict["mean_cal_x"].set_xlabel(r"$\mu_{xpol}/r²$")
+ax_dict["mean_cal_x"].set_xlabel(r"$\mu_{xpol}/r²$ [a.u.]")
 #####################################################################
 
 ax_dict["std_case"].scatter(df_case_std.ppol_r**2, df_case_std.range, s=1)
-ax_dict["std_case"].set_xlabel(r"$\sigma²_{ppol/r²}$")
+ax_dict["std_case"].set_xlabel(r"$\sigma²_{ppol/r²}$ [a.u.]")
 ax_dict["std_case"].set_ylabel("Range [km]")
 #####################################################################
 
 ax_dict["std_case_x"].scatter(df_case_std.xpol_r**2, df_case_std.range, s=1)
-ax_dict["std_case_x"].set_xlabel(r"$\sigma²_{xpol/r²}$")
+ax_dict["std_case_x"].set_xlabel(r"$\sigma²_{xpol/r²}$ [a.u.]")
 ax_dict["std_case_x"].set_ylabel("Range [km]")
 #####################################################################
 
@@ -133,7 +133,7 @@ ax_dict["std_cal"].scatter(
     s=1,
 )
 
-ax_dict["std_cal"].set_xlabel(r"$\sigma²_{ppol/r²}$")
+ax_dict["std_cal"].set_xlabel(r"$\sigma²_{ppol/r²}$ [a.u.]")
 
 #####################################################################
 ax_dict["std_cal_x"].scatter(
@@ -141,7 +141,7 @@ ax_dict["std_cal_x"].scatter(
     df_std.range,
     s=1,
 )
-ax_dict["std_cal_x"].set_xlabel(r"$\sigma²_{xpol/r²}$")
+ax_dict["std_cal_x"].set_xlabel(r"$\sigma²_{xpol/r²}$ [a.u.]")
 
 #####################################################################
 

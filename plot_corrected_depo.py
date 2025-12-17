@@ -115,7 +115,7 @@ for x in ["q", "temperature", "pressure"]:
     model[x] = model[x].assign_coords(range=z_new)
 
 mol_scatter = rayleigh.molecular_backscatter(
-    2 * np.pi,
+    np.pi,
     model["temperature"],
     model["pressure"] / 100,  # Pa to hPa
 )
@@ -286,4 +286,25 @@ fig.savefig(
     bbox_inches="tight",
     dpi=600,
 )
+# %%
+df_plot = df_sample.sel(time="2024-06-04T13:00", method="nearest")
+fig, ax = plt.subplots(1, 2, figsize=(9, 3), constrained_layout=True, sharey=True)
+ax[0].plot(
+    df_plot["beta_0"] - df_plot["beta_c"], df_plot.range, ".", label=r"$\beta$"
+)
+ax[1].plot(df_plot["depo_0"] - df_plot["depo_c"], df_plot.range, ".", label=r"$\delta$")
+for n, ax_ in enumerate(ax.flatten()):
+    ax_.text(
+        -0.0,
+        1.03,
+        "(" + string.ascii_lowercase[n] + ")",
+        transform=ax_.transAxes,
+        size=12,
+    )
+    ax_.legend()
+    ax_.set_ylim(50, 1000)
+    ax_.grid()
+
+ax[1].set_xlim(0, 0.005)
+ax[0].set_xlim(0, 4e-9)
 # %%
