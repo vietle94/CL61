@@ -1,7 +1,7 @@
 import xarray as xr
 import matplotlib.pyplot as plt
 import glob
-from matplotlib.colors import LogNorm, SymLogNorm
+from matplotlib.colors import LogNorm
 import string
 import matplotlib.dates as mdates
 
@@ -31,14 +31,14 @@ p = ax[0].pcolormesh(
     df_before["p_pol"].T,
     norm=LogNorm(vmin=1e-7, vmax=1e-4),
 )
-fig.colorbar(p, ax=ax[0], label=r"$\beta$ [m-1 sr-1]")
+fig.colorbar(p, ax=ax[0], label=r"$\beta'$ [a.u.]")
 p = ax[1].pcolormesh(
     df_after["time"],
     df_after["range"],
     df_after["p_pol"].T,
     norm=LogNorm(vmin=1e-7, vmax=1e-4),
 )
-fig.colorbar(p, ax=ax[1], label=r"$\beta$ [m-1 sr-1]")
+fig.colorbar(p, ax=ax[1], label=r"$\beta'$ [a.u.]")
 
 ax[0].set_ylabel("Range [m]")
 ax[0].xaxis.set_major_formatter(myFmt)
@@ -51,7 +51,7 @@ ax[1].set_xlabel("Time [UTC]")
 ax[1].xaxis.set_major_formatter(myFmt)
 ax[2].plot(profile_before, profile_before.range, ".", label="2024-03-07", zorder=1)
 ax[2].plot(profile_after, profile_after.range, ".", label="2024-12-02", zorder=0)
-ax[2].set_xlabel(r"$\beta$ [m-1 sr-1]")
+ax[2].set_xlabel(r"$\beta'$ [a.u.]")
 # ax[2].set_xscale("log")
 ax[2].set_xlim([-1e-6, 2e-6])
 ax[2].legend()
@@ -68,3 +68,5 @@ for n, ax_ in enumerate(ax.flatten()):
 fig.savefig(
     "/media/viet/CL61/img/aerosol_noise_lindenberg.png", dpi=600, bbox_inches="tight"
 )
+
+# %%

@@ -121,6 +121,8 @@ ax.set_ylim(70, 105)
 ax.set_axisbelow(True)
 ax.grid()
 ax.set_ylabel("Window condition")
+ax.yaxis.set_major_formatter(mtick.PercentFormatter(xmax=100))
+
 fig.savefig(
     "/media/viet/CL61/img/window_condition_vehmasmaki.png",
     dpi=300,

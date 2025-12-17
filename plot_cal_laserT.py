@@ -47,7 +47,7 @@ p = ax[0, 0].pcolormesh(
     norm=LogNorm(vmin=1e-7, vmax=1e-4),
 )
 cbar = fig.colorbar(p, ax=ax[0, 0])
-cbar.ax.set_ylabel("ppol")
+cbar.ax.set_ylabel("ppol [a.u.]")
 
 
 p = ax[1, 0].pcolormesh(
@@ -58,7 +58,7 @@ p = ax[1, 0].pcolormesh(
     norm=LogNorm(vmin=1e-7, vmax=1e-4),
 )
 cbar = fig.colorbar(p, ax=ax[1, 0])
-cbar.ax.set_ylabel("xpol")
+cbar.ax.set_ylabel("xpol [a.u.]")
 
 ax[2, 0].plot(df_.time, df_.laser_temperature)
 ax[2, 0].set_ylabel(r"Laser Temperature [$\degree C$]")
@@ -72,7 +72,7 @@ p = ax[0, 1].pcolormesh(
     norm=LogNorm(vmin=1e-7, vmax=1e-4),
 )
 cbar = fig.colorbar(p, ax=ax[0, 1])
-cbar.ax.set_ylabel("ppol")
+cbar.ax.set_ylabel("ppol [a.u.]")
 
 p = ax[1, 1].pcolormesh(
     freqx,
@@ -82,7 +82,7 @@ p = ax[1, 1].pcolormesh(
     norm=LogNorm(vmin=1e-7, vmax=1e-4),
 )
 cbar = fig.colorbar(p, ax=ax[1, 1])
-cbar.ax.set_ylabel("xpol")
+cbar.ax.set_ylabel("xpol [a.u.]")
 
 fft_laser = np.fft.fft(df_.laser_temperature.values) / df_.laser_temperature.size
 fft_laser = np.fft.fftshift(fft_laser)
@@ -104,12 +104,15 @@ ax[2, 1].annotate(
     color="r",
 )
 
+for ax_ in ax.flatten()[:4]:
+    ax_.set_ylabel("Range [m]")
+
 for ax_ in ax[:, 0]:
     ax_.xaxis.set_major_formatter(mdates.DateFormatter("%Y\n%m-%d\n%H:%M"))
     ax_.xaxis.set_major_locator(mdates.HourLocator(interval=1))
 
 
-ax[-1, -1].set_xlabel("Frequency (Hz)")
+ax[-1, -1].set_xlabel("Frequency [Hz]")
 ax[-1, -1].set_ylim(0, 1)
 
 for n, ax_ in enumerate(ax.flatten()):
@@ -121,3 +124,5 @@ for n, ax_ in enumerate(ax.flatten()):
         size=12,
     )
 fig.savefig("/media/viet/CL61/img/calibration_fft.png", bbox_inches="tight", dpi=600)
+
+# %%

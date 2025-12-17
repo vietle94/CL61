@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import glob
 import string
-from cl61.func.calibration_T import temperature_ref, noise_filter
+from cl61.func.calibration_T import temperature_ref
 
 # %%
 site = "vehmasmaki"
@@ -58,15 +58,15 @@ for ax_ in ax.flatten():
 ax[0, 0].set_ylabel("Range [m]")
 ax[1, 0].set_ylabel("Range [m]")
 
-ax[0, 0].set_xlabel(r"$\mu_{ppol/r²}$")
-ax[0, 1].set_xlabel(r"$\sigma_{ppol/r²}$")
-ax[1, 0].set_xlabel(r"$\mu_{ppol/r²}$")
-ax[1, 1].set_xlabel(r"$\sigma_{ppol/r²}$")
+ax[0, 0].set_xlabel(r"$\mu_{ppol/r²}$ [a.u.]")
+ax[0, 1].set_xlabel(r"$\sigma_{ppol/r²}$ [a.u.]")
+ax[1, 0].set_xlabel(r"$\mu_{ppol/r²}$ [a.u.]")
+ax[1, 1].set_xlabel(r"$\sigma_{ppol/r²}$ [a.u.]")
 
-ax[0, 2].set_xlabel(r"$\mu_{ppol/r²}$")
-ax[0, 3].set_xlabel(r"$\sigma_{ppol/r²}$")
-ax[1, 2].set_xlabel(r"$\mu_{ppol/r²}$")
-ax[1, 3].set_xlabel(r"$\sigma_{ppol/r²}$")
+ax[0, 2].set_xlabel(r"$\mu_{ppol/r²}$ [a.u.]")
+ax[0, 3].set_xlabel(r"$\sigma_{ppol/r²}$ [a.u.]")
+ax[1, 2].set_xlabel(r"$\mu_{ppol/r²}$ [a.u.]")
+ax[1, 3].set_xlabel(r"$\sigma_{ppol/r²}$ [a.u.]")
 
 for n, ax_ in enumerate(ax.flatten()):
     ax_.text(
