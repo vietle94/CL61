@@ -31,7 +31,7 @@ mat = np.array(
     ]
 )
 # %%
-site = "vehmasmaki"
+site = "lindenberg"  # vehamsmaki, hyytiala, kenttarova, lindenberg
 df = pd.concat(
     [pd.read_csv(x) for x in glob.glob(f"/media/viet/CL61/{site}/Cloud/*.csv")],
     ignore_index=True,
@@ -43,6 +43,7 @@ df["range"] = (
 )  # adjust for ref offset from the middle and flipped during convolution
 df = df[df.range > 500]
 df = df[df.range < 5000]
+df = df[df["cloud_beta_percent"] > 0.9]
 # df = df[df.cross_correlation > 3e-6]
 df["month_year"] = df["datetime"].dt.to_period("M")
 # march = df[df.datetime.dt.month == 5]
