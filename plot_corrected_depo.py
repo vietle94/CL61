@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 import glob
 import xarray as xr
 import matplotlib.pyplot as plt
@@ -7,7 +6,6 @@ import matplotlib.dates as mdates
 import string
 from cl61.func.study_case import process_raw, background_noise
 from matplotlib.colors import LogNorm
-import matplotlib.ticker as mtick
 from cl61.func import rayleigh
 
 myFmt = mdates.DateFormatter("%Y\n%m-%d\n%H:%M")
@@ -17,13 +15,19 @@ date = "20240604"
 time_slice = slice("2024-06-04T13:00", "2024-06-04T17:00")
 file_dir = f"/media/viet/CL61/studycase/kenttarova/{date}/"
 df_sample = process_raw(file_dir, f"{date} 130000", f"{date} 170000")
+
+# %%
 bk_noise = background_noise("kenttarova", date)  # same time frame
-bk_noise = (
-    bk_noise.set_index("datetime")
-    .between_time("13:00", "17:00")
-    .reset_index()
-    .mean(numeric_only=True)
-)
+# bk_noise = (
+#     bk_noise.set_index("datetime")
+#     .between_time("13:00", "17:00")
+#     .reset_index()
+#     .mean(numeric_only=True)
+# )
+bk_noise = bk_noise.rename(columns={"datetime": "time"})
+bk_noise = bk_noise.set_index("time").to_xarray()
+bk_noise = bk_noise.interp(time=df_sample.time, method="linear")
+
 # %%
 ref_mean = xr.open_dataset(
     "/media/viet/CL61/calibration/result/kenttarova/calibration_mean.nc"
@@ -159,14 +163,14 @@ p = ax[0, 0].pcolormesh(
     df_sample["beta_c"].T,
     norm=LogNorm(vmin=1e-7, vmax=1e-4),
 )
-fig.colorbar(p, ax=ax[0, 0], label=r"$\beta'_v$")
+fig.colorbar(p, ax=ax[0, 0], label=r"$\beta'_v \mathrm{~[sr^{-1}~m^{-1}]}$")
 p = ax[0, 1].pcolormesh(
     df_sample.time,
     df_sample.range,
     (df_sample["beta_v_std"] ** 2).T,
     norm=LogNorm(vmin=1e-16, vmax=1e-12),
 )
-fig.colorbar(p, ax=ax[0, 1], label=r"$\sigma^2_{\beta'_v}$")
+fig.colorbar(p, ax=ax[0, 1], label=r"$\sigma^2_{\beta'_v} \mathrm{~[sr^{-2}~m^{-2}]}$")
 ax[0, 1].set_ylim(0, 4000)
 
 # depo corrected
@@ -187,14 +191,14 @@ p = ax[2, 0].pcolormesh(
     df_sample["beta_p"].T,
     norm=LogNorm(vmin=1e-7, vmax=1e-4),
 )
-fig.colorbar(p, ax=ax[2, 0], label=r"$\beta_p$")
+fig.colorbar(p, ax=ax[2, 0], label=r"$\beta_p\mathrm{~[sr^{-1}~m^{-1}]}$")
 p = ax[2, 1].pcolormesh(
     df_sample.time,
     df_sample.range,
     (df_sample["beta_p_std"] ** 2).T,
     norm=LogNorm(vmin=1e-16, vmax=1e-12),
 )
-fig.colorbar(p, ax=ax[2, 1], label=r"$\sigma^2_{\beta_p}$")
+fig.colorbar(p, ax=ax[2, 1], label=r"$\sigma^2_{\beta_p}\mathrm{~[sr^{-2}~m^{-2}]}$")
 ax[2, 1].set_ylim(0, 1000)
 
 # depo aerosol
@@ -214,7 +218,7 @@ ax[3, 1].set_ylim(0, 1000)
 ax[3, 0].xaxis.set_major_formatter(myFmt)
 ax[3, 0].xaxis.set_major_locator(mdates.HourLocator(interval=1))
 for ax_ in ax[:, 0]:
-    ax_.set_ylabel("Range (m)")
+    ax_.set_ylabel("Range [m]")
 
 for n, ax_ in enumerate(ax.flatten()):
     ax_.text(
@@ -236,7 +240,7 @@ ax[0, 0].plot(df_plot["beta_c"], df_plot.range, ".", label=r"$\beta_v$")
 ax[0, 0].plot(df_plot["beta_p"], df_plot.range, ".", label=r"$\beta_p$")
 # ax[0, 0].set_xscale('log')
 ax[0, 0].set_xlim(1e-8, 4e-7)
-ax[0, 0].set_xlabel(r"$\beta$")
+ax[0, 0].set_xlabel(r"$\beta\mathrm{~[sr^{-1}~m^{-1}]}$")
 
 ax[0, 1].plot(
     df_plot["beta_v_std"] ** 2, df_plot.range, ".", label=r"$\sigma^2_{\beta_v}$"
@@ -245,8 +249,8 @@ ax[0, 1].plot(
     df_plot["beta_p_std"] ** 2, df_plot.range, ".", label=r"$\sigma^2_{\beta_p}$"
 )
 # ax[0, 1].set_xscale("log")
-ax[0, 1].set_xlim(1e-17, 4e-14)
-ax[0, 1].set_xlabel(r"$\sigma^2_{\beta}$")
+ax[0, 1].set_xlim(1e-17, 1e-14)
+ax[0, 1].set_xlabel(r"$\sigma^2_{\beta}\mathrm{~[sr^{-2}~m^{-2}]}$")
 
 ax[1, 0].plot(df_plot["depo_0"], df_plot.range, ".", label=r"$\delta$")
 ax[1, 0].plot(df_plot["depo_c"], df_plot.range, ".", label=r"$\delta_v$")
@@ -268,7 +272,7 @@ ax[1, 1].set_xlim(0, 0.1)
 ax[1, 1].set_xlabel(r"$\sigma^2_{\delta}$")
 
 for ax_ in ax[:, 0]:
-    ax_.set_ylabel("Range (m)")
+    ax_.set_ylabel("Range [m]")
 
 for n, ax_ in enumerate(ax.flatten()):
     ax_.text(
@@ -289,9 +293,7 @@ fig.savefig(
 # %%
 df_plot = df_sample.sel(time="2024-06-04T13:00", method="nearest")
 fig, ax = plt.subplots(1, 2, figsize=(9, 3), constrained_layout=True, sharey=True)
-ax[0].plot(
-    df_plot["beta_0"] - df_plot["beta_c"], df_plot.range, ".", label=r"$\beta$"
-)
+ax[0].plot(df_plot["beta_0"] - df_plot["beta_c"], df_plot.range, ".", label=r"$\beta$")
 ax[1].plot(df_plot["depo_0"] - df_plot["depo_c"], df_plot.range, ".", label=r"$\delta$")
 for n, ax_ in enumerate(ax.flatten()):
     ax_.text(

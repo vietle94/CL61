@@ -222,7 +222,7 @@ for site, ax_ in zip(
 
     ax_.plot(rayleigh["datetime"], rayleigh["c"], "x", color="C0")
 
-    ax_2.set_ylabel("Laser power (%)", color="C1")
+    ax_2.set_ylabel("Laser power [%]", color="C1")
     ax_2.tick_params(axis="y", labelcolor="C1")
     ax_2.set_ylim(0, 105)
     ax_.axhline(1, color="grey", linestyle="--")
@@ -287,7 +287,7 @@ line_legend_handles = [
         marker=".",
         color="C1",
         linestyle="-",
-        label="Laser power (%)",
+        label="Laser power [%]",
         markersize=6,
     ),
     Line2D([0], [0], color="grey", linestyle="--", label="Reference c = 1"),

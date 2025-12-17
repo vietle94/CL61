@@ -6,8 +6,9 @@ import numpy as np
 import matplotlib.dates as mdates
 from matplotlib.colors import LogNorm
 import string
-myFmt = mdates.DateFormatter("%Y\n%m-%d\n%H:%M")
+import matplotlib.ticker as mtick
 
+myFmt = mdates.DateFormatter("%Y\n%m-%d\n%H:%M")
 # %%
 file_dir = "/media/viet/CL61/studycase/vehmasmaki/20230519/"
 df_full = xr.open_mfdataset(glob.glob(file_dir + "*.nc"))
@@ -21,8 +22,8 @@ p = ax[0].pcolormesh(
     df_full["beta_att"].T,
     norm=LogNorm(vmin=1e-7, vmax=1e-5),
 )
-ax[0].set_ylabel("Range (m)")
-fig.colorbar(p, ax=ax[0], label=r"$\beta$")
+ax[0].set_ylabel("Range [m]")
+fig.colorbar(p, ax=ax[0], label=r"$\beta$ [a.u.]")
 
 file_dir = "/media/viet/CL61/vehmasmaki/Diag/"
 df = pd.read_csv(file_dir + "20230519.csv")
@@ -62,16 +63,20 @@ ax[1].plot(
     df["window_condition"],
     ".",
 )
+ax[1].yaxis.set_major_formatter(mtick.PercentFormatter(xmax=100))
+
 ax[3].plot(
     df["datetime"],
     df["window_blower_heater"],
     ".",
 )
+ax[3].set_yticks([0, 1])
+ax[3].set_yticklabels(["Off", "On"])
 ax[3].grid()
 ax[2].plot(df["datetime"], dp, ".", label="Internal dew point")
 ax[2].plot(t["datetime"], t["Air temperature [°C]"], ".", label="Air temperature")
 ax[2].legend()
-ax[2].set_ylabel("T (°C)")
+ax[2].set_ylabel("T [°C]")
 ax[1].set_ylabel("Window condition")
 ax[3].set_ylabel("Window blower heater")
 ax[1].grid()

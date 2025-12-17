@@ -6,7 +6,7 @@ from cl61.func.calibration_T import temperature_ref
 import matplotlib as mpl
 
 # %%
-site = "kenttarova"
+site = "hyytiala"
 files = glob.glob(f"/media/viet/CL61/calibration/{site}/merged/*.nc")
 df = xr.open_mfdataset(files)
 df_mean, df_std, df_count = temperature_ref(df)
@@ -63,16 +63,18 @@ for t, color in zip(t_valid, my_c):
     )
 
 handles, labels = ax[0, 0].get_legend_handles_labels()
-fig.legend(handles, labels, loc="lower center", ncol=5)
+fig.legend(
+    handles, labels, loc="lower center", ncol=6, title="Internal Temperature [°C]"
+)
 ax[0, 0].set_xlim([-5e-15, 1e-14])
 ax[1, 0].set_xlim([-5e-15, 1e-14])
 ax[0, 1].set_xlim(plot_lim[site])
 ax[1, 1].set_xlim(plot_lim[site])
 
-ax[0, 0].set_xlabel(r"$\mu_{ppol/r²}$")
-ax[0, 1].set_xlabel(r"$\sigma²_{ppol/r²}$")
-ax[1, 0].set_xlabel(r"$\mu_{xpol/r²}$")
-ax[1, 1].set_xlabel(r"$\sigma²_{xpol/r²}$")
+ax[0, 0].set_xlabel(r"$\mu_{ppol/r²}$ [a.u.]")
+ax[0, 1].set_xlabel(r"$\sigma²_{ppol/r²}$ [a.u.]")
+ax[1, 0].set_xlabel(r"$\mu_{xpol/r²}$ [a.u.]")
+ax[1, 1].set_xlabel(r"$\sigma²_{xpol/r²}$ [a.u.]")
 
 ax[0, 0].set_ylabel("Range [m]")
 ax[1, 0].set_ylabel("Range [m]")
@@ -147,7 +149,9 @@ for t, color in zip(t_valid, my_c):
     )
 
 handles, labels = ax[0, 0].get_legend_handles_labels()
-fig.legend(handles, labels, loc="lower center", ncol=5)
+fig.legend(
+    handles, labels, loc="lower center", ncol=6, title="Internal Temperature [°C]"
+)
 ax[0, 0].set_xlim(plot_lim[site][0, :])
 ax[1, 0].set_xlim(plot_lim[site][0, :])
 ax[0, 1].set_xlim(plot_lim[site][1, :])

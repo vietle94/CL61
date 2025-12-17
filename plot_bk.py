@@ -53,9 +53,7 @@ def read_noise(site, time=("22:00", "23:59")):
 # %%
 cmap = plt.get_cmap("viridis")
 cmap.set_bad("grey")
-fig, axes = plt.subplots(
-    4, 1, figsize=(9, 8), sharex=True, constrained_layout=True, sharey=True
-)
+fig, axes = plt.subplots(4, 1, figsize=(9, 9), sharex=True, sharey=True)
 for ax, site in zip(
     axes,
     ["vehmasmaki", "hyytiala", "kenttarova", "lindenberg"],
@@ -81,7 +79,7 @@ for ax, site in zip(
     p = ax.scatter(
         df["datetime"], (df["co_std"] ** 2) * df["integration"], alpha=0.5, s=1
     )
-    ax.set_ylabel(r"$\sigma²_{ppol/r^2} \times t$ [a.u.]", color="C0")
+    ax.set_ylabel(r"$\sigma²_{ppol/r^2} \times t_{integration}$ [a.u.]", color="C0")
     ax.set_yscale("log")
     ax.tick_params(axis="y", labelcolor="C0")
     ax.set_ylim(top=1e-24)
@@ -94,6 +92,7 @@ for ax, site in zip(
     ax1.grid()
     ax.grid()
     ax1.set_ylim(0, 110)
+    ax1.set_yticks(list(range(0, 120, 25)))
 
 axes[0].axvspan(
     "2022-06-15", "2023-04-27", color="tab:brown", alpha=0.2, label="1.1.10"
@@ -128,8 +127,10 @@ for n, ax_ in enumerate(axes.flatten()):
     ax_.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m"))
     ax_.xaxis.set_major_locator(mdates.MonthLocator(12))
     ax_.xaxis.set_minor_locator(mdates.MonthLocator(6))
-    ax_.legend(loc="lower left")
 
+handles, labels = axes[0].get_legend_handles_labels()
+fig.subplots_adjust(bottom=0.1, hspace=0.4)
+fig.legend(handles, labels, loc="lower center", ncol=2, title="Firmware version")
 fig.savefig("/media/viet/CL61/img/bk_ts.png", dpi=600, bbox_inches="tight")
 
 
@@ -260,8 +261,10 @@ for n, ax_ in enumerate(axes.flatten()):
         transform=ax_.transAxes,
         size=12,
     )
-axes[1, 0].set_xlabel("Laser power (%)")
-axes[1, 1].set_xlabel("Laser power (%)")
-axes[0, 0].set_ylabel(r"$\sigma²_{ppol/r^2} \times t_{integration}$")
-axes[1, 0].set_ylabel(r"$\sigma²_{ppol/r^2} \times t_{integration}$")
+axes[1, 0].set_xlabel("Laser power [%]")
+axes[1, 1].set_xlabel("Laser power [%]")
+axes[0, 0].set_ylabel(r"$\sigma²_{ppol/r^2} \times t_{integration}$ [a.u.]")
+axes[1, 0].set_ylabel(r"$\sigma²_{ppol/r^2} \times t_{integration}$ [a.u.]")
 fig.savefig("/media/viet/CL61/img/bk_laser.png", dpi=600, bbox_inches="tight")
+
+# %%
