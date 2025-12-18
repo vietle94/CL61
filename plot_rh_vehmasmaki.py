@@ -23,7 +23,7 @@ p = ax[0].pcolormesh(
     norm=LogNorm(vmin=1e-7, vmax=1e-5),
 )
 ax[0].set_ylabel("Range [m]")
-fig.colorbar(p, ax=ax[0], label=r"$\beta$ [a.u.]")
+fig.colorbar(p, ax=ax[0], label=r"$\beta'$ [a.u.]")
 
 file_dir = "/media/viet/CL61/vehmasmaki/Diag/"
 df = pd.read_csv(file_dir + "20230519.csv")
