@@ -192,7 +192,7 @@ def depo_aerosol(depo_volume, depo_mol, beta_ratio):
 
 
 def depo_aersosol_sigma(
-    depo_volume, depo_mol, beta_ratio, sigma_depo_volume, sigma_beta_ratio
+    depo_volume, depo_mol, beta_ratio, sigma_depo_volume, sigma_beta_p, beta_mol
 ):
     """
     Calculate aerosol depolarization ratio using extinction ratio.
@@ -200,7 +200,9 @@ def depo_aersosol_sigma(
     Parameters:
         depo_volume (np.ndarray): Volume depolarization ratio
         depo_mol (np.ndarray): Molecular depolarization ratio
-        sigma_ratio (np.ndarray): Extinction ratio
+        sigma_beta_p (np.ndarray): sigma of particle backscatter coefficient
+        sigma_depo_volume (np.ndarray): sigma of volume depolarization ratio
+        beta_mol (np.ndarray): Molecular backscatter coefficient
 
     Returns:
         depo_aer (np.ndarray): Aerosol depolarization ratio
@@ -210,7 +212,7 @@ def depo_aersosol_sigma(
     term2_nominator = (1 + depo_mol) * (1 + depo_volume) * (depo_mol - depo_volume)
     term2_denominator = ((1 + depo_mol) * beta_ratio - (1 + depo_volume)) ** 2
     result = np.sqrt(
-        (term1_nominator / term1_denominator) * sigma_depo_volume**2
-        + (term2_nominator / term2_denominator) * sigma_beta_ratio**2
+        ((term1_nominator / term1_denominator) * sigma_depo_volume) ** 2
+        + ((term2_nominator / term2_denominator) * sigma_beta_p / beta_mol) ** 2
     )
     return result
