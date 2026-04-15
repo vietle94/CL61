@@ -149,7 +149,12 @@ depo_volume = df_sample["xpol_c"] / df_sample["ppol_c"]
 beta_ratio = rayleigh.backscatter_ratio(df_sample["beta_p"], beta_mol)
 df_sample["depo_aerosol"] = rayleigh.depo_aerosol(depo_volume, depo_mol, beta_ratio)
 df_sample["depo_aerosol_sigma"] = rayleigh.depo_aersosol_sigma(
-    depo_volume, depo_mol, beta_ratio, df_sample["depo_c_std"], df_sample["beta_p_std"]
+    depo_volume,
+    depo_mol,
+    beta_ratio,
+    df_sample["depo_c_std"],
+    df_sample["beta_p_std"],
+    beta_mol,
 )
 
 # %%
@@ -228,9 +233,9 @@ for n, ax_ in enumerate(ax.flatten()):
         transform=ax_.transAxes,
         size=12,
     )
-fig.savefig(
-    "/media/viet/CL61/img/studycase_depo_corrected.png", bbox_inches="tight", dpi=600
-)
+# fig.savefig(
+#     "/media/viet/CL61/img/studycase_depo_corrected.png", bbox_inches="tight", dpi=600
+# )
 
 # %%
 df_plot = df_sample.sel(time="2024-06-04T13:00", method="nearest")
@@ -285,11 +290,11 @@ for n, ax_ in enumerate(ax.flatten()):
     ax_.legend()
     ax_.set_ylim(50, 1000)
     ax_.grid()
-fig.savefig(
-    "/media/viet/CL61/img/studycase_depo_corrected_profile.png",
-    bbox_inches="tight",
-    dpi=600,
-)
+# fig.savefig(
+#     "/media/viet/CL61/img/studycase_depo_corrected_profile.png",
+#     bbox_inches="tight",
+#     dpi=600,
+# )
 # %%
 df_plot = df_sample.sel(time="2024-06-04T13:00", method="nearest")
 fig, ax = plt.subplots(1, 2, figsize=(9, 3), constrained_layout=True, sharey=True)
