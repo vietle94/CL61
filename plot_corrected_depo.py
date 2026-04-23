@@ -81,9 +81,11 @@ solar_1012 = xr.where(
 )
 df_sample["ppol_std"] = np.sqrt(df_std_ref_sample["ppol_r"] ** 2 + solar_1012**2)
 
-df_sample["beta_v_std"] = (
-    np.sqrt(df_sample["ppol_std"] ** 2 + df_sample["xpol_std"] ** 2)
-) * df_sample.range**2  #  range correction, think carefully here
+df_sample["beta_v_std"] = np.sqrt(
+    (df_sample["ppol_std"] ** 2 + df_sample["xpol_std"] ** 2)
+    * df_sample.range**4  #  range correction, think carefully here
+    + 0.01 * df_sample["beta_c"] ** 2
+)
 
 df_sample["depo_c_std"] = np.abs(df_sample["depo_c"]) * np.sqrt(
     (df_sample["xpol_std"] / df_sample["xpol_c"]) ** 2
@@ -233,9 +235,9 @@ for n, ax_ in enumerate(ax.flatten()):
         transform=ax_.transAxes,
         size=12,
     )
-# fig.savefig(
-#     "/media/viet/CL61/img/studycase_depo_corrected.png", bbox_inches="tight", dpi=600
-# )
+fig.savefig(
+    "/media/viet/CL61/img/studycase_depo_corrected.png", bbox_inches="tight", dpi=600
+)
 
 # %%
 df_plot = df_sample.sel(time="2024-06-04T13:00", method="nearest")
@@ -290,28 +292,28 @@ for n, ax_ in enumerate(ax.flatten()):
     ax_.legend()
     ax_.set_ylim(50, 1000)
     ax_.grid()
-# fig.savefig(
-#     "/media/viet/CL61/img/studycase_depo_corrected_profile.png",
-#     bbox_inches="tight",
-#     dpi=600,
-# )
+fig.savefig(
+    "/media/viet/CL61/img/studycase_depo_corrected_profile.png",
+    bbox_inches="tight",
+    dpi=600,
+)
 # %%
-df_plot = df_sample.sel(time="2024-06-04T13:00", method="nearest")
-fig, ax = plt.subplots(1, 2, figsize=(9, 3), constrained_layout=True, sharey=True)
-ax[0].plot(df_plot["beta_0"] - df_plot["beta_c"], df_plot.range, ".", label=r"$\beta$")
-ax[1].plot(df_plot["depo_0"] - df_plot["depo_c"], df_plot.range, ".", label=r"$\delta$")
-for n, ax_ in enumerate(ax.flatten()):
-    ax_.text(
-        -0.0,
-        1.03,
-        "(" + string.ascii_lowercase[n] + ")",
-        transform=ax_.transAxes,
-        size=12,
-    )
-    ax_.legend()
-    ax_.set_ylim(50, 1000)
-    ax_.grid()
+# df_plot = df_sample.sel(time="2024-06-04T13:00", method="nearest")
+# fig, ax = plt.subplots(1, 2, figsize=(9, 3), constrained_layout=True, sharey=True)
+# ax[0].plot(df_plot["beta_0"] - df_plot["beta_c"], df_plot.range, ".", label=r"$\beta$")
+# ax[1].plot(df_plot["depo_0"] - df_plot["depo_c"], df_plot.range, ".", label=r"$\delta$")
+# for n, ax_ in enumerate(ax.flatten()):
+#     ax_.text(
+#         -0.0,
+#         1.03,
+#         "(" + string.ascii_lowercase[n] + ")",
+#         transform=ax_.transAxes,
+#         size=12,
+#     )
+#     ax_.legend()
+#     ax_.set_ylim(50, 1000)
+#     ax_.grid()
 
-ax[1].set_xlim(0, 0.005)
-ax[0].set_xlim(0, 4e-9)
-# %%
+# ax[1].set_xlim(0, 0.005)
+# ax[0].set_xlim(0, 4e-9)
+# # %%
