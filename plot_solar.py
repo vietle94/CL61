@@ -8,6 +8,7 @@ import string
 from cl61.func import rayleigh
 import numpy as np
 from matplotlib.ticker import FuncFormatter
+from scipy.integrate import cumulative_trapezoid
 
 # %%
 site = "kenttarova"
@@ -36,7 +37,7 @@ model = model.swap_dims({"level": "height"})
 model = model[["temperature", "pressure", "q"]]
 model = model.drop_vars("level")
 model = model.sel(height=slice(None, 15000))
-model = model.interp(height=df_mean.range)
+model = model.interp(height=df_mean.sel(range=slice(100, 15000)).range)
 mol_scatter = rayleigh.molecular_backscatter(
     np.pi,
     model["temperature"],
@@ -45,8 +46,15 @@ mol_scatter = rayleigh.molecular_backscatter(
 mol_depo = rayleigh.depo(
     rayleigh.f(910.55, 380, rayleigh.humidity_conversion(model["q"]))
 )
-mol_ppol = mol_scatter / 1000 * (1 - mol_depo)
-mol_xpol = mol_scatter / 1000 * mol_depo
+mol_scatter = mol_scatter / 1000
+mol_scatter = mol_scatter * np.exp(
+    -2
+    * cumulative_trapezoid(mol_scatter * 8 / 3 * np.pi, mol_scatter.height, initial=0)
+)
+
+mol_ppol = mol_scatter * (1 - mol_depo)
+mol_xpol = mol_scatter * mol_depo
+
 # %%
 fig = plt.figure(layout="constrained", figsize=(16, 9))
 ax_dict = fig.subplot_mosaic(
@@ -76,7 +84,7 @@ ax_dict["mean_case"].scatter(
     mol_ppol,
     mol_ppol.height,
     s=1,
-    label=r"$^\parallel\beta_{mol}$",
+    label=r"$^\parallel\beta'_{mol}$",
     c="C3",
 )
 
@@ -92,7 +100,7 @@ ax_dict["mean_case_x"].scatter(
     mol_xpol,
     mol_xpol.height,
     s=1,
-    label=r"$^\perp\beta_{mol}/r²$",
+    label=r"$^\perp\beta'_{mol}$",
     c="C3",
 )
 ax_dict["mean_case_x"].legend(loc="upper right")
