@@ -175,7 +175,7 @@ p = ax[0, 1].pcolormesh(
     df_sample.time,
     df_sample.range,
     (df_sample["beta_v_std"] ** 2).T,
-    norm=LogNorm(vmin=1e-16, vmax=1e-12),
+    norm=LogNorm(vmin=1e-16, vmax=1e-10),
 )
 fig.colorbar(p, ax=ax[0, 1], label=r"$\sigma^2_{\beta'_v} \mathrm{~[sr^{-2}~m^{-2}]}$")
 ax[0, 1].set_ylim(0, 4000)
