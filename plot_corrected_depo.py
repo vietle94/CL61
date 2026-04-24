@@ -242,9 +242,24 @@ fig.savefig(
 # %%
 df_plot = df_sample.sel(time="2024-06-04T13:00", method="nearest")
 fig, ax = plt.subplots(2, 2, figsize=(9, 6), constrained_layout=True, sharey=True)
-ax[0, 0].plot(df_plot["beta_0"], df_plot.range, ".", label=r"$\beta$")
-ax[0, 0].plot(df_plot["beta_c"], df_plot.range, ".", label=r"$\beta_v$")
-ax[0, 0].plot(df_plot["beta_p"], df_plot.range, ".", label=r"$\beta_p$")
+ax[0, 0].errorbar(
+    df_plot["beta_c"],
+    df_plot.range,
+    xerr=df_plot["beta_v_std"],
+    fmt=".",
+    alpha=0.3,
+    label=r"$\beta_v$",
+)
+ax[0, 0].errorbar(
+    df_plot["beta_p"],
+    df_plot.range,
+    xerr=df_plot["beta_p_std"],
+    alpha=0.3,
+    fmt=".",
+    label=r"$\beta_p$",
+)
+ax[0, 0].plot(df_plot["beta_0"], df_plot.range, ".", alpha=0.3, label=r"$\beta$")
+
 # ax[0, 0].set_xscale('log')
 ax[0, 0].set_xlim(1e-8, 4e-7)
 ax[0, 0].set_xlabel(r"$\beta\mathrm{~[sr^{-1}~m^{-1}]}$")
@@ -259,9 +274,24 @@ ax[0, 1].plot(
 ax[0, 1].set_xlim(1e-17, 1e-14)
 ax[0, 1].set_xlabel(r"$\sigma^2_{\beta}\mathrm{~[sr^{-2}~m^{-2}]}$")
 
-ax[1, 0].plot(df_plot["depo_0"], df_plot.range, ".", label=r"$\delta$")
-ax[1, 0].plot(df_plot["depo_c"], df_plot.range, ".", label=r"$\delta_v$")
-ax[1, 0].plot(df_plot["depo_aerosol"], df_plot.range, ".", label=r"$\delta_p$")
+ax[1, 0].errorbar(
+    df_plot["depo_c"],
+    df_plot.range,
+    xerr=df_plot["depo_c_std"],
+    alpha=0.3,
+    fmt=".",
+    label=r"$\delta_v$",
+)
+ax[1, 0].errorbar(
+    df_plot["depo_aerosol"],
+    df_plot.range,
+    xerr=df_plot["depo_aerosol_sigma"],
+    alpha=0.3,
+    fmt=".",
+    label=r"$\delta_p$",
+)
+ax[1, 0].plot(df_plot["depo_0"], df_plot.range, ".", alpha=0.3, label=r"$\delta$")
+
 ax[1, 0].set_xlim(0, 0.3)
 ax[1, 0].set_xlabel(r"$\delta$")
 
