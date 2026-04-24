@@ -6,7 +6,7 @@ from cl61.func.calibration_T import temperature_ref
 import matplotlib as mpl
 
 # %%
-site = "hyytiala"
+site = "kenttarova"
 files = glob.glob(f"/media/viet/CL61/calibration/{site}/merged/*.nc")
 df = xr.open_mfdataset(files)
 df_mean, df_std, df_count = temperature_ref(df)
@@ -89,10 +89,11 @@ for ax_, lab in zip(ax.flatten(), plot_sub[site]):
         size=12,
     )
     ax_.grid()
+fig.suptitle(site.capitalize(), y=0.98, weight="bold")
 fig.savefig(
     f"/media/viet/CL61/img/calibration_all_{site}.png",
     dpi=600,
-    bbox_inches="tight",
+    bbox_inches=None,
 )
 # %%
 # 2000 m
@@ -115,7 +116,7 @@ my_c = mpl.colormaps["RdBu_r"](
 plot_lim = {
     "vehmasmaki": np.array([[-5e-14, 1.5e-13], [0.25e-28, 6e-28]]),
     "kenttarova": np.array([[-2e-13, 1e-13], [4e-28, 64e-28]]),
-    "hyytiala": np.array([[-7e-13, 1e-13], [25e-30, 3e-28]]),
+    "hyytiala": np.array([[-7e-13, 1e-13], [25e-30, 5e-28]]),
 }
 
 # %%
@@ -176,9 +177,10 @@ for ax_, lab in zip(ax.flatten(), plot_sub[site]):
         size=12,
     )
     ax_.grid()
+fig.suptitle(site.capitalize(), y=0.98, weight="bold")
 fig.savefig(
     f"/media/viet/CL61/img/calibration_1k_{site}.png",
     dpi=600,
-    bbox_inches="tight",
+    bbox_inches=None,
 )
 # %%
