@@ -12,6 +12,24 @@ df = xr.open_mfdataset(files)
 df_mean, df_std, df_count = temperature_ref(df)
 
 # %%
+if site == "vehmasmaki":
+    print(site)
+    overlap = xr.open_dataset(
+        glob.glob(
+            "/media/viet/CL61/studycase/vehmasmaki/20241027/*.nc")[0])['overlap_function']
+elif site == "hyytiala":
+    print(site)
+    overlap = xr.open_dataset(
+        glob.glob("/media/viet/CL61/studycase/hyytiala/20240808/*.nc")[0]
+    )["overlap_function"]
+elif site == "kenttarova":
+    print(site)
+    overlap = xr.open_dataset(
+        glob.glob("/media/viet/CL61/studycase/kenttarova/20240915/*.nc")[0]
+    )["overlap_function"]
+
+overlap = overlap.ffill(dim='range')
+# %%
 t_valid = df_count.internal_temperature_bins.where(
     (df_count.internal_temperature > 200).compute(), drop=True
 ).values
@@ -22,7 +40,7 @@ my_c = mpl.colormaps["RdBu_r"](
     np.append(np.linspace(0, 0.4, n1), np.linspace(0.6, 1, n2))
 )
 plot_lim = {
-    "vehmasmaki": [25e-30, 1e-28],
+    "vehmasmaki": [6e-29, 0.9e-28],
     "hyytiala": [25e-30, 9e-28],
     "kenttarova": [4e-28, 64e-28],
 }
@@ -36,27 +54,27 @@ plot_sub = {
 fig, ax = plt.subplots(2, 2, figsize=(6, 6), sharey=True)
 for t, color in zip(t_valid, my_c):
     ax[0, 0].plot(
-        df_mean.sel(internal_temperature_bins=t).ppol_ref,
+        df_mean.sel(internal_temperature_bins=t).ppol_ref*overlap,
         df_mean.range,
         color=color,
         label=t,
     )
     ax[0, 1].plot(
-        df_std.sel(internal_temperature_bins=t).ppol_ref ** 2,
+        df_std.sel(internal_temperature_bins=t).ppol_ref ** 2 * overlap ** 2,
         df_mean.range,
         color=color,
         label=t,
     )
 
     ax[1, 0].plot(
-        df_mean.sel(internal_temperature_bins=t).xpol_ref,
+        df_mean.sel(internal_temperature_bins=t).xpol_ref*overlap,
         df_mean.range,
         color=color,
         label=t,
     )
 
     ax[1, 1].plot(
-        df_std.sel(internal_temperature_bins=t).xpol_ref ** 2,
+        df_std.sel(internal_temperature_bins=t).xpol_ref ** 2 * overlap ** 2,
         df_mean.range,
         color=color,
         label=t,
@@ -66,8 +84,8 @@ handles, labels = ax[0, 0].get_legend_handles_labels()
 fig.legend(
     handles, labels, loc="lower center", ncol=6, title="Internal Temperature [°C]"
 )
-ax[0, 0].set_xlim([-5e-15, 1e-14])
-ax[1, 0].set_xlim([-5e-15, 1e-14])
+ax[0, 0].set_xlim([-2e-15, 2e-15])
+ax[1, 0].set_xlim([-2e-15, 2e-15])
 ax[0, 1].set_xlim(plot_lim[site])
 ax[1, 1].set_xlim(plot_lim[site])
 
@@ -114,36 +132,36 @@ my_c = mpl.colormaps["RdBu_r"](
     np.append(np.linspace(0, 0.4, n1), np.linspace(0.6, 1, n2))
 )
 plot_lim = {
-    "vehmasmaki": np.array([[-5e-14, 1.5e-13], [0.25e-28, 6e-28]]),
-    "kenttarova": np.array([[-2e-13, 1e-13], [4e-28, 64e-28]]),
-    "hyytiala": np.array([[-7e-13, 1e-13], [25e-30, 5e-28]]),
+    "vehmasmaki": np.array([[-1e-14, 0.8e-13], [0.25e-28, 1.1e-28]]),
+    "kenttarova": np.array([[-3e-14, 0.8e-13], [4e-28, 64e-28]]),
+    "hyytiala": np.array([[-1e-13, 1e-13], [25e-30, 5e-28]]),
 }
 
 # %%
 fig, ax = plt.subplots(2, 2, figsize=(6, 6), sharey=True)
 for t, color in zip(t_valid, my_c):
     ax[0, 0].plot(
-        df_mean.sel(internal_temperature_bins=t).ppol_ref,
+        df_mean.sel(internal_temperature_bins=t).ppol_ref * overlap,
         df_mean.range,
         color=color,
         label=t,
     )
     ax[0, 1].plot(
-        df_std.sel(internal_temperature_bins=t).ppol_ref ** 2,
+        df_std.sel(internal_temperature_bins=t).ppol_ref ** 2 * overlap ** 2,
         df_mean.range,
         color=color,
         label=t,
     )
 
     ax[1, 0].plot(
-        df_mean.sel(internal_temperature_bins=t).xpol_ref,
+        df_mean.sel(internal_temperature_bins=t).xpol_ref * overlap,
         df_mean.range,
         color=color,
         label=t,
     )
 
     ax[1, 1].plot(
-        df_std.sel(internal_temperature_bins=t).xpol_ref ** 2,
+        df_std.sel(internal_temperature_bins=t).xpol_ref ** 2 * overlap ** 2,
         df_mean.range,
         color=color,
         label=t,
@@ -158,10 +176,10 @@ ax[1, 0].set_xlim(plot_lim[site][0, :])
 ax[0, 1].set_xlim(plot_lim[site][1, :])
 ax[1, 1].set_xlim(plot_lim[site][1, :])
 
-ax[0, 0].set_xlabel(r"$\mu_{ppol/r²}$")
-ax[0, 1].set_xlabel(r"$\sigma²_{ppol/r²}$")
-ax[1, 0].set_xlabel(r"$\mu_{xpol/r²}$")
-ax[1, 1].set_xlabel(r"$\sigma²_{xpol/r²}$")
+ax[0, 0].set_xlabel(r"$\mu_{ppol/r²}$ [a.u.]")
+ax[0, 1].set_xlabel(r"$\sigma²_{ppol/r²}$ [a.u.]")
+ax[1, 0].set_xlabel(r"$\mu_{xpol/r²}$ [a.u.]")
+ax[1, 1].set_xlabel(r"$\sigma²_{xpol/r²}$ [a.u.]")
 
 ax[0, 0].set_ylim([0, 1000])
 ax[0, 0].set_ylabel("Range [m]")
