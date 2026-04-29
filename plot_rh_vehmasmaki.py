@@ -15,15 +15,15 @@ df_full = xr.open_mfdataset(glob.glob(file_dir + "*.nc"))
 df_full = df_full.sel(range=slice(0, 10000))
 
 # %%
-fig, ax = plt.subplots(4, 1, figsize=(8, 6), sharex=True, constrained_layout=True)
-p = ax[0].pcolormesh(
+fig, ax = plt.subplots(3, 2, figsize=(12, 6), sharex=True, constrained_layout=True)
+p = ax[0, 0].pcolormesh(
     df_full["time"],
     df_full["range"],
     df_full["beta_att"].T,
     norm=LogNorm(vmin=1e-7, vmax=1e-5),
 )
-ax[0].set_ylabel("Range [m]")
-fig.colorbar(p, ax=ax[0], label=r"$\beta'$ [a.u.]")
+ax[0, 0].set_ylabel("Range [m]")
+fig.colorbar(p, ax=ax[0, 0], label=r"$\beta'$ [a.u.]")
 
 file_dir = "/media/viet/CL61/vehmasmaki/Diag/"
 df = pd.read_csv(file_dir + "20230519.csv")
@@ -58,30 +58,45 @@ t["datetime"] = pd.to_datetime(
     t["Year"] + "-" + t["Month"] + "-" + t["Day"] + " " + t["Time [UTC]"]
 )
 
-ax[1].plot(
+ax[1, 0].plot(
     df["datetime"],
     df["window_condition"],
     ".",
 )
-ax[1].yaxis.set_major_formatter(mtick.PercentFormatter(xmax=100))
+ax[1, 0].yaxis.set_major_formatter(mtick.PercentFormatter(xmax=100))
+ax[1, 0].set_ylabel("Window condition")
 
-ax[3].plot(
+ax[2, 0].plot(
     df["datetime"],
     df["window_blower_heater"],
     ".",
 )
-ax[3].set_yticks([0, 1])
-ax[3].set_yticklabels(["Off", "On"])
-ax[3].grid()
-ax[2].plot(df["datetime"], dp, ".", label="Internal dew point")
-ax[2].plot(t["datetime"], t["Air temperature [°C]"], ".", label="Air temperature")
-ax[2].legend()
-ax[2].set_ylabel("T [°C]")
-ax[1].set_ylabel("Window condition")
-ax[3].set_ylabel("Window blower heater")
-ax[1].grid()
-ax[2].grid()
-ax[0].xaxis.set_major_formatter(myFmt)
+ax[2, 0].set_ylabel("Window blower heater")
+ax[2, 0].set_yticks([0, 1])
+ax[2, 0].set_yticklabels(["Off", "On"])
+
+ax[0, 1].plot(
+    df["datetime"],
+    df["internal_temperature"],
+    ".",
+)
+ax[0, 1].set_ylabel("Internal temperature [°C]")
+
+ax[1, 1].plot(
+    df["datetime"],
+    df["internal_humidity"],
+    ".",
+)
+ax[1, 1].set_ylabel("Internal humidity [%]")
+ax[1, 1].tick_params(axis="y")
+
+
+ax[2, 1].plot(df["datetime"], dp, ".", label="Internal dew point")
+ax[2, 1].plot(t["datetime"], t["Air temperature [°C]"], ".", label="Air temperature")
+ax[2, 1].legend()
+ax[2, 1].set_ylabel("T [°C]")
+
+ax[0, 0].xaxis.set_major_formatter(myFmt)
 
 for n, ax_ in enumerate(ax.flatten()):
     ax_.text(
@@ -91,6 +106,7 @@ for n, ax_ in enumerate(ax.flatten()):
         transform=ax_.transAxes,
         size=12,
     )
+    ax_.grid()
 fig.savefig(
     "/media/viet/CL61/img/window_condition_study_case_vehmasmaki.png",
     dpi=300,
