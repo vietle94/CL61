@@ -248,7 +248,7 @@ ax[0, 0].errorbar(
     xerr=df_plot["beta_v_std"],
     fmt=".",
     alpha=0.3,
-    label=r"$\beta_v$",
+    label=r"$\beta_v'$",
 )
 ax[0, 0].errorbar(
     df_plot["beta_p"],
@@ -265,7 +265,7 @@ ax[0, 0].set_xlim(1e-8, 4e-7)
 ax[0, 0].set_xlabel(r"$\beta\mathrm{~[sr^{-1}~m^{-1}]}$")
 
 ax[0, 1].plot(
-    df_plot["beta_v_std"] ** 2, df_plot.range, ".", label=r"$\sigma^2_{\beta_v}$"
+    df_plot["beta_v_std"] ** 2, df_plot.range, ".", label=r"$\sigma^2_{\beta_v'}$"
 )
 ax[0, 1].plot(
     df_plot["beta_p_std"] ** 2, df_plot.range, ".", label=r"$\sigma^2_{\beta_p}$"
