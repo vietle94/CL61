@@ -118,7 +118,7 @@ ax_dict["mean_cal"].scatter(
     s=1,
     c="C0",
 )
-ax_dict["mean_cal"].set_xlabel(r"$\mu_{\parallel P_{instrument} O(r)}$ [a.u.]")
+ax_dict["mean_cal"].set_xlabel(r"$\mu_{\parallel P_\mathrm{instrument} O(r)}$ [a.u.]")
 #####################################################################
 
 ax_dict["mean_cal_x"].scatter(
@@ -129,7 +129,7 @@ ax_dict["mean_cal_x"].scatter(
     s=1,
     c="C0",
 )
-ax_dict["mean_cal_x"].set_xlabel(r"$\mu_{\perp P_{instrument} O(r)}$ [a.u.]")
+ax_dict["mean_cal_x"].set_xlabel(r"$\mu_{\perp P_\mathrm{instrument} O(r)}$ [a.u.]")
 #####################################################################
 
 ax_dict["std_case"].scatter(df_case_std.ppol_r**2, df_case_std.range, s=1)
@@ -139,7 +139,6 @@ ax_dict["std_case"].set_ylabel("Range [km]")
 
 ax_dict["std_case_x"].scatter(df_case_std.xpol_r**2, df_case_std.range, s=1)
 ax_dict["std_case_x"].set_xlabel(r"$\sigma²_{xpol/r²}$ [a.u.]")
-ax_dict["std_case_x"].set_ylabel("Range [km]")
 #####################################################################
 
 ax_dict["std_cal"].scatter(
@@ -148,7 +147,9 @@ ax_dict["std_cal"].scatter(
     s=1,
 )
 
-ax_dict["std_cal"].set_xlabel(r"$\sigma²_{\parallel P_{instrument} O(r)}$ [a.u.]")
+ax_dict["std_cal"].set_xlabel(
+    r"$\sigma²_{\parallel P_\mathrm{instrument} O(r)}$ [a.u.]"
+)
 
 #####################################################################
 ax_dict["std_cal_x"].scatter(
@@ -156,7 +157,7 @@ ax_dict["std_cal_x"].scatter(
     df_std.range,
     s=1,
 )
-ax_dict["std_cal_x"].set_xlabel(r"$\sigma²_{\perp P_{instrument} O(r)}$ [a.u.]")
+ax_dict["std_cal_x"].set_xlabel(r"$\sigma²_{\perp P_\mathrm{instrument} O(r)}$ [a.u.]")
 
 #####################################################################
 
