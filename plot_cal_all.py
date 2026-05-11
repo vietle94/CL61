@@ -6,7 +6,7 @@ from cl61.func.calibration_T import temperature_ref
 import matplotlib as mpl
 
 # %%
-site = "kenttarova"
+site = "hyytiala"
 files = glob.glob(f"/media/viet/CL61/calibration/{site}/merged/*.nc")
 df = xr.open_mfdataset(files)
 df_mean, df_std, df_count = temperature_ref(df)
@@ -15,8 +15,8 @@ df_mean, df_std, df_count = temperature_ref(df)
 if site == "vehmasmaki":
     print(site)
     overlap = xr.open_dataset(
-        glob.glob(
-            "/media/viet/CL61/studycase/vehmasmaki/20241027/*.nc")[0])['overlap_function']
+        glob.glob("/media/viet/CL61/studycase/vehmasmaki/20241027/*.nc")[0]
+    )["overlap_function"]
 elif site == "hyytiala":
     print(site)
     overlap = xr.open_dataset(
@@ -28,7 +28,7 @@ elif site == "kenttarova":
         glob.glob("/media/viet/CL61/studycase/kenttarova/20240915/*.nc")[0]
     )["overlap_function"]
 
-overlap = overlap.ffill(dim='range')
+overlap = overlap.ffill(dim="range")
 # %%
 t_valid = df_count.internal_temperature_bins.where(
     (df_count.internal_temperature > 200).compute(), drop=True
@@ -54,27 +54,27 @@ plot_sub = {
 fig, ax = plt.subplots(2, 2, figsize=(6, 6), sharey=True)
 for t, color in zip(t_valid, my_c):
     ax[0, 0].plot(
-        df_mean.sel(internal_temperature_bins=t).ppol_ref*overlap,
+        df_mean.sel(internal_temperature_bins=t).ppol_ref * overlap,
         df_mean.range,
         color=color,
         label=t,
     )
     ax[0, 1].plot(
-        df_std.sel(internal_temperature_bins=t).ppol_ref ** 2 * overlap ** 2,
+        df_std.sel(internal_temperature_bins=t).ppol_ref ** 2 * overlap**2,
         df_mean.range,
         color=color,
         label=t,
     )
 
     ax[1, 0].plot(
-        df_mean.sel(internal_temperature_bins=t).xpol_ref*overlap,
+        df_mean.sel(internal_temperature_bins=t).xpol_ref * overlap,
         df_mean.range,
         color=color,
         label=t,
     )
 
     ax[1, 1].plot(
-        df_std.sel(internal_temperature_bins=t).xpol_ref ** 2 * overlap ** 2,
+        df_std.sel(internal_temperature_bins=t).xpol_ref ** 2 * overlap**2,
         df_mean.range,
         color=color,
         label=t,
@@ -89,10 +89,10 @@ ax[1, 0].set_xlim([-2e-15, 2e-15])
 ax[0, 1].set_xlim(plot_lim[site])
 ax[1, 1].set_xlim(plot_lim[site])
 
-ax[0, 0].set_xlabel(r"$\mu_{ppol/r²}$ [a.u.]")
-ax[0, 1].set_xlabel(r"$\sigma²_{ppol/r²}$ [a.u.]")
-ax[1, 0].set_xlabel(r"$\mu_{xpol/r²}$ [a.u.]")
-ax[1, 1].set_xlabel(r"$\sigma²_{xpol/r²}$ [a.u.]")
+ax[0, 0].set_xlabel(r"$\mu_{\parallel P_\mathrm{instrument} O(r)}$ [a.u.]")
+ax[0, 1].set_xlabel(r"$\sigma²_{\parallel P_\mathrm{instrument} O(r)}$ [a.u.]")
+ax[1, 0].set_xlabel(r"$\mu_{\perp P_\mathrm{instrument} O(r)}$ [a.u.]")
+ax[1, 1].set_xlabel(r"$\sigma²_{\perp P_\mathrm{instrument} O(r)}$ [a.u.]")
 
 ax[0, 0].set_ylabel("Range [m]")
 ax[1, 0].set_ylabel("Range [m]")
@@ -106,6 +106,8 @@ for ax_, lab in zip(ax.flatten(), plot_sub[site]):
         transform=ax_.transAxes,
         size=12,
     )
+    ax_.xaxis.get_offset_text().set_fontsize(8)
+
     ax_.grid()
 fig.suptitle(site.capitalize(), y=0.98, weight="bold")
 fig.savefig(
@@ -147,7 +149,7 @@ for t, color in zip(t_valid, my_c):
         label=t,
     )
     ax[0, 1].plot(
-        df_std.sel(internal_temperature_bins=t).ppol_ref ** 2 * overlap ** 2,
+        df_std.sel(internal_temperature_bins=t).ppol_ref ** 2 * overlap**2,
         df_mean.range,
         color=color,
         label=t,
@@ -161,7 +163,7 @@ for t, color in zip(t_valid, my_c):
     )
 
     ax[1, 1].plot(
-        df_std.sel(internal_temperature_bins=t).xpol_ref ** 2 * overlap ** 2,
+        df_std.sel(internal_temperature_bins=t).xpol_ref ** 2 * overlap**2,
         df_mean.range,
         color=color,
         label=t,
@@ -176,10 +178,10 @@ ax[1, 0].set_xlim(plot_lim[site][0, :])
 ax[0, 1].set_xlim(plot_lim[site][1, :])
 ax[1, 1].set_xlim(plot_lim[site][1, :])
 
-ax[0, 0].set_xlabel(r"$\mu_{ppol/r²}$ [a.u.]")
-ax[0, 1].set_xlabel(r"$\sigma²_{ppol/r²}$ [a.u.]")
-ax[1, 0].set_xlabel(r"$\mu_{xpol/r²}$ [a.u.]")
-ax[1, 1].set_xlabel(r"$\sigma²_{xpol/r²}$ [a.u.]")
+ax[0, 0].set_xlabel(r"$\mu_{\parallel P_\mathrm{instrument} O(r)}$ [a.u.]")
+ax[0, 1].set_xlabel(r"$\sigma²_{\parallel P_\mathrm{instrument} O(r)}$ [a.u.]")
+ax[1, 0].set_xlabel(r"$\mu_{\perp P_\mathrm{instrument} O(r)}$ [a.u.]")
+ax[1, 1].set_xlabel(r"$\sigma²_{\perp P_\mathrm{instrument} O(r)}$ [a.u.]")
 
 ax[0, 0].set_ylim([0, 1000])
 ax[0, 0].set_ylabel("Range [m]")
@@ -195,6 +197,8 @@ for ax_, lab in zip(ax.flatten(), plot_sub[site]):
         size=12,
     )
     ax_.grid()
+    ax_.xaxis.get_offset_text().set_fontsize(8)
+
 fig.suptitle(site.capitalize(), y=0.98, weight="bold")
 fig.savefig(
     f"/media/viet/CL61/img/calibration_1k_{site}.png",
