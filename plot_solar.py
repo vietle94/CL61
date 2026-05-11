@@ -15,7 +15,9 @@ site = "kenttarova"
 files = glob.glob(f"/media/viet/CL61/calibration/{site}/merged/*.nc")
 df = xr.open_dataset(files[2])
 df_mean, df_std, _ = temperature_ref(df)
-
+overlap = xr.open_dataset(
+    glob.glob("/media/viet/CL61/studycase/kenttarova/20240915/*.nc")[0]
+)["overlap_function"]
 # %%
 file_dir = "/media/viet/CL61/studycase/kenttarova/20240305/"
 df_case_full = xr.open_mfdataset(file_dir + "*.nc")
@@ -75,6 +77,7 @@ fig.colorbar(p, ax=ax_dict["time"], label=r"$ppol$ [a.u.]")
 ax_dict["time"].xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
 ax_dict["time"].xaxis.set_major_locator(mdates.HourLocator(interval=1))
 ax_dict["time"].set_ylabel("Range [km]")
+ax_dict["time"].set_xlabel("Time [UTC]")
 
 ax_dict["mean_case"].scatter(
     df_case_mean.p_pol, df_case_mean.range, s=1, label=r"$\mu_{ppol}$"
@@ -108,21 +111,25 @@ ax_dict["mean_case_x"].set_xlabel(r"$\mu_{xpol}$ [a.u.]")
 #####################################################################
 
 ax_dict["mean_cal"].scatter(
-    df_mean.sel(internal_temperature_bins=18).p_pol / (df_mean.range**2),
+    df_mean.sel(internal_temperature_bins=18).p_pol
+    / (df_mean.range**2)
+    * overlap.fillna(1),
     df_mean.range,
     s=1,
     c="C0",
 )
-ax_dict["mean_cal"].set_xlabel(r"$\mu_{ppol}/r²$ [a.u.]")
+ax_dict["mean_cal"].set_xlabel(r"$\mu_{\parallel P_{instrument} O(r)}$ [a.u.]")
 #####################################################################
 
 ax_dict["mean_cal_x"].scatter(
-    df_mean.sel(internal_temperature_bins=18).x_pol / (df_mean.range**2),
+    df_mean.sel(internal_temperature_bins=18).x_pol
+    / (df_mean.range**2)
+    * overlap.fillna(1),
     df_mean.range,
     s=1,
     c="C0",
 )
-ax_dict["mean_cal_x"].set_xlabel(r"$\mu_{xpol}/r²$ [a.u.]")
+ax_dict["mean_cal_x"].set_xlabel(r"$\mu_{\perp P_{instrument} O(r)}$ [a.u.]")
 #####################################################################
 
 ax_dict["std_case"].scatter(df_case_std.ppol_r**2, df_case_std.range, s=1)
@@ -136,20 +143,20 @@ ax_dict["std_case_x"].set_ylabel("Range [km]")
 #####################################################################
 
 ax_dict["std_cal"].scatter(
-    df_std.sel(internal_temperature_bins=18).ppol_r ** 2,
+    df_std.sel(internal_temperature_bins=18).ppol_r ** 2 * overlap.fillna(1) ** 2,
     df_std.range,
     s=1,
 )
 
-ax_dict["std_cal"].set_xlabel(r"$\sigma²_{ppol/r²}$ [a.u.]")
+ax_dict["std_cal"].set_xlabel(r"$\sigma²_{\parallel P_{instrument} O(r)}$ [a.u.]")
 
 #####################################################################
 ax_dict["std_cal_x"].scatter(
-    df_std.sel(internal_temperature_bins=18).xpol_r ** 2,
+    df_std.sel(internal_temperature_bins=18).xpol_r ** 2 * overlap.fillna(1) ** 2,
     df_std.range,
     s=1,
 )
-ax_dict["std_cal_x"].set_xlabel(r"$\sigma²_{xpol/r²}$ [a.u.]")
+ax_dict["std_cal_x"].set_xlabel(r"$\sigma²_{\perp P_{instrument} O(r)}$ [a.u.]")
 
 #####################################################################
 
