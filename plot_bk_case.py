@@ -91,13 +91,13 @@ for x in grp_mean.range_bins.values:
     )
 ax[0, 0].set_ylabel("Range [m]")
 ax[1, 0].set_ylabel("Range [m]")
-ax[2, 0].set_ylabel(r"$\mu_{ppol/r²}$ [a.u.]")
-ax[2, 1].set_ylabel(r"$\mu_{xpol/r²}$ [a.u.]")
-ax[3, 0].set_ylabel(r"$\sigma²_{ppol/r²}$ [a.u.]")
-ax[3, 1].set_ylabel(r"$\sigma²_{xpol/r²}$ [a.u.]")
+ax[2, 0].set_ylabel(r"$\mu_{\parallel P_\mathrm{res}}$ [a.u.]")
+ax[2, 1].set_ylabel(r"$\mu_{\perp P_\mathrm{res}}$ [a.u.]")
+ax[3, 0].set_ylabel(r"$\sigma²_{\parallel P_\mathrm{res}}$ [a.u.]")
+ax[3, 1].set_ylabel(r"$\sigma²_{\perp P_\mathrm{res}}$ [a.u.]")
 
 handles, labels = ax[3, 1].get_legend_handles_labels()
-fig.legend(handles, labels, ncol=6, loc="outside lower center")
+fig.legend(handles, labels, ncol=6, loc="outside lower center", title="Range bins")
 for ax_ in ax.flatten()[4:]:
     ax_.grid()
     ax_.xaxis.set_major_formatter(plt.matplotlib.dates.DateFormatter("%H:%M"))
