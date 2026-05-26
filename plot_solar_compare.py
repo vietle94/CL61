@@ -1,14 +1,7 @@
 import xarray as xr
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-from matplotlib.colors import LogNorm
-from cl61.func.calibration_T import temperature_ref
 import glob
 import string
-from cl61.func import rayleigh
-import numpy as np
-from matplotlib.ticker import FuncFormatter
-from scipy.integrate import cumulative_trapezoid
 
 # %%
 site = "kenttarova"
