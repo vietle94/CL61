@@ -30,7 +30,7 @@ fig, ax = plt.subplots(
 ax[0].scatter(
     profile_before,
     profile_before.range,
-    label="uncorrected",
+    label="uncalibrated",
     alpha=0.5,
     edgecolor="none",
     s=20,
@@ -38,7 +38,7 @@ ax[0].scatter(
 ax[0].scatter(
     profile_before * 1.5,
     profile_before.range,
-    label="corrected",
+    label="calibrated",
     alpha=0.5,
     edgecolor="none",
     s=20,
@@ -47,7 +47,7 @@ ax[0].set_title("2024-03-03", weight="bold")
 ax[1].scatter(
     profile_after,
     profile_after.range,
-    label="uncorrected",
+    label="uncalibrated",
     alpha=0.5,
     edgecolor="none",
     s=20,
@@ -55,7 +55,7 @@ ax[1].scatter(
 ax[1].scatter(
     profile_after * 0.6,
     profile_after.range,
-    label="corrected",
+    label="calibrated",
     alpha=0.5,
     edgecolor="none",
     s=20,
