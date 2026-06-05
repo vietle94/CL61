@@ -54,13 +54,19 @@ df = xr.open_dataset(files[0])
 ax.plot(df.overlap_function, df.range, label="Kenttarova")
 ax.set_ylim(0, 600)
 
+files = glob.glob("/media/viet/CL61/studycase/lindenberg/20241011/*.nc")
+df = xr.open_dataset(files[0])
+ax.plot(df.overlap_function, df.range, label="Lindenberg")
+ax.set_ylim(0, 600)
+
 ax.legend()
 ax.grid()
 ax.set_xlabel("Overlap function")
 ax.set_ylabel("Range [m]")
-fig.savefig(
-    "/media/viet/CL61/img/overlap_function.png",
-    dpi=600,
-    bbox_inches="tight",
-)
+# fig.savefig(
+#     "/media/viet/CL61/img/overlap_function.png",
+#     dpi=600,
+#     bbox_inches="tight",
+# )
 # %%
+xr.open_groups(files[0])
