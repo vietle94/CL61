@@ -7,6 +7,10 @@ from cl61.func.calibration_T import temperature_ref
 
 # %%
 site = "vehmasmaki"
+# overlap = xr.open_dataset(
+#     glob.glob("/media/viet/CL61/studycase/vehmasmaki/20241027/*.nc")[0]
+# )["overlap_function"]
+# overlap = overlap.ffill(dim="range")
 t_range = range(23, 25)
 files = glob.glob(f"/media/viet/CL61/calibration/{site}/merged/*.nc")
 fig, ax = plt.subplots(2, 4, sharey="row", figsize=(9, 6), constrained_layout=True)
@@ -23,27 +27,26 @@ for ii, file in enumerate(files):
         df_mean, df_std, _ = temperature_ref(df_)
         df_plot = df_mean.sel(internal_temperature_bins=t)
         df_plot_std = df_std.sel(internal_temperature_bins=t)
-        ax[0, i * 2].plot(
-            df_plot.ppol_ref, df_plot.range, label=df_date, c=cmap(ii - 1)
-        )
+        ax[0, i * 2].plot(df_plot.ppol_ref, df_plot.range, label=df_date, c=cmap(ii))
         ax[0, i * 2].set_xlim([-1e-14, 1e-14])
         ax[0, i * 2].set_title(f"T: {t}°C")
 
         ax[0, i * 2 + 1].plot(
-            df_plot_std.ppol_ref, df_plot_std.range, label=df_date, c=cmap(ii - 1)
+            df_plot_std.ppol_ref,
+            df_plot_std.range,
+            label=df_date,
+            c=cmap(ii),
         )
         ax[0, i * 2 + 1].set_xlim([0.5e-14, 3e-14])
         ax[0, i * 2 + 1].set_title(f"T: {t}°C")
 
-        ax[1, i * 2].plot(
-            df_plot.ppol_ref, df_plot.range, label=df_date, c=cmap(ii - 1)
-        )
+        ax[1, i * 2].plot(df_plot.ppol_ref, df_plot.range, label=df_date, c=cmap(ii))
         ax[1, i * 2].set_xlim([-5e-14, 1.5e-13])
         ax[1, i * 2].set_ylim([0, 1000])
         ax[1, i * 2].set_title(f"T: {t}°C")
 
         ax[1, i * 2 + 1].plot(
-            df_plot_std.ppol_ref, df_plot_std.range, label=df_date, c=cmap(ii - 1)
+            df_plot_std.ppol_ref, df_plot_std.range, label=df_date, c=cmap(ii)
         )
         ax[1, i * 2 + 1].set_xlim([0.5e-14, 3e-14])
         ax[1, i * 2 + 1].set_title(f"T: {t}°C")
@@ -58,15 +61,15 @@ for ax_ in ax.flatten():
 ax[0, 0].set_ylabel("Range [m]")
 ax[1, 0].set_ylabel("Range [m]")
 
-ax[0, 0].set_xlabel(r"$\mu_{ppol/r²}$ [a.u.]")
-ax[0, 1].set_xlabel(r"$\sigma_{ppol/r²}$ [a.u.]")
-ax[1, 0].set_xlabel(r"$\mu_{ppol/r²}$ [a.u.]")
-ax[1, 1].set_xlabel(r"$\sigma_{ppol/r²}$ [a.u.]")
+ax[0, 0].set_xlabel(r"$\mu_{\parallel P_\mathrm{instrument}}$ [a.u.]")
+ax[0, 1].set_xlabel(r"$\sigma_{\parallel P_\mathrm{instrument}}$ [a.u.]")
+ax[1, 0].set_xlabel(r"$\mu_{\parallel P_\mathrm{instrument}}$ [a.u.]")
+ax[1, 1].set_xlabel(r"$\sigma_{\parallel P_\mathrm{instrument}}$ [a.u.]")
 
-ax[0, 2].set_xlabel(r"$\mu_{ppol/r²}$ [a.u.]")
-ax[0, 3].set_xlabel(r"$\sigma_{ppol/r²}$ [a.u.]")
-ax[1, 2].set_xlabel(r"$\mu_{ppol/r²}$ [a.u.]")
-ax[1, 3].set_xlabel(r"$\sigma_{ppol/r²}$ [a.u.]")
+ax[0, 2].set_xlabel(r"$\mu_{\parallel P_\mathrm{instrument}}$ [a.u.]")
+ax[0, 3].set_xlabel(r"$\sigma_{\parallel P_\mathrm{instrument}}$ [a.u.]")
+ax[1, 2].set_xlabel(r"$\mu_{\parallel P_\mathrm{instrument}}$ [a.u.]")
+ax[1, 3].set_xlabel(r"$\sigma_{\parallel P_\mathrm{instrument}}$ [a.u.]")
 
 for n, ax_ in enumerate(ax.flatten()):
     ax_.text(
@@ -76,10 +79,11 @@ for n, ax_ in enumerate(ax.flatten()):
         transform=ax_.transAxes,
         size=12,
     )
+    ax_.xaxis.get_offset_text().set_fontsize(8)
 
 fig.savefig(
     f"/media/viet/CL61/img/calibration_temperature_{site}_overtime.png",
-    dpi=600,
+    dpi=300,
     bbox_inches="tight",
 )
 

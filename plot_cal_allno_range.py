@@ -6,7 +6,7 @@ from cl61.func.calibration_T import temperature_ref
 import matplotlib as mpl
 
 # %%
-site = "kenttarova"
+site = "hyytiala"
 files = glob.glob(f"/media/viet/CL61/calibration/{site}/merged/*.nc")
 df = xr.open_mfdataset(files)
 df_mean, df_std, df_count = temperature_ref(df)
@@ -28,9 +28,9 @@ plot_lim = {
 }
 
 plot_sub = {
-    "vehmasmaki": ["a", "b", "c", "e"],
-    "hyytiala": ["f", "g", "h", "i"],
-    "kenttarova": ["j", "k", "l", "m"],
+    "vehmasmaki": ["a", "b", "c", "d"],
+    "hyytiala": ["e", "f", "g", "h"],
+    "kenttarova": ["i", "j", "k", "l"],
 }
 # %%
 fig, ax = plt.subplots(2, 2, figsize=(6, 6), sharey=True)
@@ -75,10 +75,10 @@ ax[1, 1].set_xscale("log")
 # ax[0, 0].set_xlim(-1.5e-7, 2.5e-7)
 # ax[1, 0].set_xlim(-1.5e-7, 2.5e-7)
 
-ax[0, 0].set_xlabel(r"$\mu_{ppol}$ [a.u.]")
-ax[0, 1].set_xlabel(r"$\sigma²_{ppol}$ [a.u.]")
-ax[1, 0].set_xlabel(r"$\mu_{xpol}$ [a.u.]")
-ax[1, 1].set_xlabel(r"$\sigma²_{xpol}$ [a.u.]")
+ax[0, 0].set_xlabel(r"$\mu_{^\parallel\beta'}$ [a.u.]")
+ax[0, 1].set_xlabel(r"$\sigma²_{^\parallel\beta'}$ [a.u.]")
+ax[1, 0].set_xlabel(r"$\mu_{^\perp\beta'}$ [a.u.]")
+ax[1, 1].set_xlabel(r"$\sigma²_{^\perp\beta'}$ [a.u.]")
 
 ax[0, 0].set_ylabel("Range [m]")
 ax[1, 0].set_ylabel("Range [m]")
@@ -168,10 +168,10 @@ ax[1, 1].set_xlim(plot_lim[site][1, :])
 ax[0, 1].set_xscale("log")
 ax[1, 1].set_xscale("log")
 
-ax[0, 0].set_xlabel(r"$\mu_{ppol}$ [a.u.]")
-ax[0, 1].set_xlabel(r"$\sigma²_{ppol}$ [a.u.]")
-ax[1, 0].set_xlabel(r"$\mu_{xpol}$ [a.u.]")
-ax[1, 1].set_xlabel(r"$\sigma²_{xpol}$ [a.u.]")
+ax[0, 0].set_xlabel(r"$\mu_{^\parallel\beta'}$ [a.u.]")
+ax[0, 1].set_xlabel(r"$\sigma²_{^\parallel\beta'}$ [a.u.]")
+ax[1, 0].set_xlabel(r"$\mu_{^\perp\beta'}$ [a.u.]")
+ax[1, 1].set_xlabel(r"$\sigma²_{^\perp\beta'}$ [a.u.]")
 
 ax[0, 0].set_ylim([50, 1000])
 ax[0, 0].set_ylabel("Range [m]")

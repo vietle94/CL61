@@ -166,7 +166,7 @@ fig, ax = plt.subplots(1, 3, figsize=(9, 3), constrained_layout=True, sharey=Tru
 ax[0].plot(
     df_plot["xpol_r"] * df_plot.range**2,
     df_plot.range,
-    label=r"$xpol$",
+    label=r"$^\perp \beta'$",
 )
 ax[0].plot(
     df_plot["xpol_c"] * df_plot.range**2,
@@ -174,13 +174,13 @@ ax[0].plot(
     label=r"$^\perp \beta'_\mathrm{corrected}$",
 )
 ax[0].set_xlim(-1e-9, 5e-9)
-ax[0].set_xlabel(r"$xpol$ [a.u.]")
+ax[0].set_xlabel(r"$^\perp \beta'$ [a.u.]")
 # ax[0].set_xlim(-1e-13, 5e-13)
 
 ax[1].plot(
     df_plot["ppol_r"] * df_plot.range**2,
     df_plot.range,
-    label=r"$ppol$",
+    label=r"$^\parallel \beta'$",
 )
 ax[1].plot(
     df_plot["ppol_c"] * df_plot.range**2,
@@ -188,7 +188,7 @@ ax[1].plot(
     label=r"$^\parallel \beta'_\mathrm{corrected}$",
 )
 ax[1].set_xlim(-1e-7, 1e-6)
-ax[1].set_xlabel(r"$ppol$ [a.u.]")
+ax[1].set_xlabel(r"$^\parallel \beta'$ [a.u.]")
 
 ax[2].plot(
     df_plot["depo_0"],

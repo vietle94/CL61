@@ -6,7 +6,7 @@ from cl61.func.calibration_T import temperature_ref
 import matplotlib as mpl
 
 # %%
-site = "hyytiala"
+site = "kenttarova"
 files = glob.glob(f"/media/viet/CL61/calibration/{site}/merged/*.nc")
 df = xr.open_mfdataset(files)
 df_mean, df_std, df_count = temperature_ref(df)
@@ -46,9 +46,9 @@ plot_lim = {
 }
 
 plot_sub = {
-    "vehmasmaki": ["a", "b", "c", "e"],
-    "hyytiala": ["f", "g", "h", "i"],
-    "kenttarova": ["j", "k", "l", "m"],
+    "vehmasmaki": ["a", "b", "c", "d"],
+    "hyytiala": ["e", "f", "g", "h"],
+    "kenttarova": ["i", "j", "k", "l"],
 }
 # %%
 fig, ax = plt.subplots(2, 2, figsize=(6, 6), sharey=True)

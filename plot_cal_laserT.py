@@ -47,7 +47,7 @@ p = ax[0, 0].pcolormesh(
     norm=LogNorm(vmin=1e-7, vmax=1e-4),
 )
 cbar = fig.colorbar(p, ax=ax[0, 0])
-cbar.ax.set_ylabel("ppol [a.u.]")
+cbar.ax.set_ylabel(r"$^\parallel \beta'$ [a.u.]")
 
 
 p = ax[1, 0].pcolormesh(
@@ -58,7 +58,7 @@ p = ax[1, 0].pcolormesh(
     norm=LogNorm(vmin=1e-7, vmax=1e-4),
 )
 cbar = fig.colorbar(p, ax=ax[1, 0])
-cbar.ax.set_ylabel("xpol [a.u.]")
+cbar.ax.set_ylabel(r"$^\perp \beta'$ [a.u.]")
 
 ax[2, 0].plot(df_.time, df_.laser_temperature)
 ax[2, 0].set_ylabel(r"Laser Temperature [$\degree C$]")
@@ -72,7 +72,7 @@ p = ax[0, 1].pcolormesh(
     norm=LogNorm(vmin=1e-7, vmax=1e-4),
 )
 cbar = fig.colorbar(p, ax=ax[0, 1])
-cbar.ax.set_ylabel("ppol [a.u.]")
+cbar.ax.set_ylabel(r"$^\parallel \beta'$ [a.u.]")
 
 p = ax[1, 1].pcolormesh(
     freqx,
@@ -82,7 +82,7 @@ p = ax[1, 1].pcolormesh(
     norm=LogNorm(vmin=1e-7, vmax=1e-4),
 )
 cbar = fig.colorbar(p, ax=ax[1, 1])
-cbar.ax.set_ylabel("xpol [a.u.]")
+cbar.ax.set_ylabel(r"$^\perp \beta'$ [a.u.]")
 
 fft_laser = np.fft.fft(df_.laser_temperature.values) / df_.laser_temperature.size
 fft_laser = np.fft.fftshift(fft_laser)

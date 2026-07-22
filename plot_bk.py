@@ -79,7 +79,9 @@ for ax, site in zip(
     p = ax.scatter(
         df["datetime"], (df["co_std"] ** 2) * df["integration"], alpha=0.5, s=1
     )
-    ax.set_ylabel(r"$\sigma²_{ppol/r^2} \times t_{integration}$ [a.u.]", color="C0")
+    ax.set_ylabel(
+        r"$\sigma²_{^\parallel\beta'/r^2} \times t_{integration}$ [a.u.]", color="C0"
+    )
     ax.set_yscale("log")
     ax.tick_params(axis="y", labelcolor="C0")
     ax.set_ylim(top=1e-24)
@@ -131,7 +133,7 @@ for n, ax_ in enumerate(axes.flatten()):
 handles, labels = axes[0].get_legend_handles_labels()
 fig.subplots_adjust(bottom=0.1, hspace=0.4)
 fig.legend(handles, labels, loc="lower center", ncol=2, title="Firmware version")
-fig.savefig("/media/viet/CL61/img/bk_ts.png", dpi=600, bbox_inches="tight")
+fig.savefig("/media/viet/CL61/img/bk_ts.png", dpi=300, bbox_inches="tight")
 
 
 # %%
@@ -263,8 +265,8 @@ for n, ax_ in enumerate(axes.flatten()):
     )
 axes[1, 0].set_xlabel("Laser power [%]")
 axes[1, 1].set_xlabel("Laser power [%]")
-axes[0, 0].set_ylabel(r"$\sigma²_{ppol/r^2} \times t_{integration}$ [a.u.]")
-axes[1, 0].set_ylabel(r"$\sigma²_{ppol/r^2} \times t_{integration}$ [a.u.]")
-fig.savefig("/media/viet/CL61/img/bk_laser.png", dpi=600, bbox_inches="tight")
+axes[0, 0].set_ylabel(r"$\sigma²_{^\parallel\beta'/r^2} \times t_{integration}$ [a.u.]")
+axes[1, 0].set_ylabel(r"$\sigma²_{^\parallel\beta'/r^2} \times t_{integration}$ [a.u.]")
+fig.savefig("/media/viet/CL61/img/bk_laser.png", dpi=300, bbox_inches="tight")
 
 # %%

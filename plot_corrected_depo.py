@@ -258,7 +258,7 @@ ax[0, 0].errorbar(
     fmt=".",
     label=r"$\beta_p$",
 )
-ax[0, 0].plot(df_plot["beta_0"], df_plot.range, ".", alpha=0.3, label=r"$\beta$")
+ax[0, 0].plot(df_plot["beta_0"], df_plot.range, ".", alpha=0.3, label=r"$\beta'$")
 
 # ax[0, 0].set_xscale('log')
 ax[0, 0].set_xlim(1e-8, 4e-7)
@@ -363,7 +363,7 @@ ax[0, 0].errorbar(
     fmt=".",
     label=r"$\beta_p$",
 )
-ax[0, 0].plot(beta_0_mean, df_plot.range, ".", alpha=0.3, label=r"$\beta$")
+ax[0, 0].plot(beta_0_mean, df_plot.range, ".", alpha=0.3, label=r"$\beta'$")
 
 # ax[0, 0].set_xscale('log')
 ax[0, 0].set_xlim(1e-8, 4e-7)

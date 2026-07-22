@@ -73,14 +73,14 @@ p = ax_dict["time"].pcolormesh(
     df_case_full["p_pol"].T,
     norm=LogNorm(vmin=1e-7, vmax=1e-4),
 )
-fig.colorbar(p, ax=ax_dict["time"], label=r"$ppol$ [a.u.]")
+fig.colorbar(p, ax=ax_dict["time"], label=r"$^\parallel\beta'$ [a.u.]")
 ax_dict["time"].xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
 ax_dict["time"].xaxis.set_major_locator(mdates.HourLocator(interval=1))
 ax_dict["time"].set_ylabel("Range [km]")
 ax_dict["time"].set_xlabel("Time [UTC]")
 
 ax_dict["mean_case"].scatter(
-    df_case_mean.p_pol, df_case_mean.range, s=1, label=r"$\mu_{ppol}$"
+    df_case_mean.p_pol, df_case_mean.range, s=1, label=r"$\mu_{^\parallel\beta'}$"
 )
 
 ax_dict["mean_case"].scatter(
@@ -91,13 +91,13 @@ ax_dict["mean_case"].scatter(
     c="C3",
 )
 
-ax_dict["mean_case"].set_xlabel(r"$\mu_{ppol}$ [a.u.]")
+ax_dict["mean_case"].set_xlabel(r"$\mu_{^\parallel\beta'}$ [a.u.]")
 ax_dict["mean_case"].set_ylabel("Range [km]")
 ax_dict["mean_case"].legend(loc="upper right")
 ##################################################################
 
 ax_dict["mean_case_x"].scatter(
-    df_case_mean.x_pol, df_case_mean.range, s=1, label=r"$\mu_{xpol}$"
+    df_case_mean.x_pol, df_case_mean.range, s=1, label=r"$\mu_{^\perp\beta'}$"
 )
 ax_dict["mean_case_x"].scatter(
     mol_xpol,
@@ -107,7 +107,7 @@ ax_dict["mean_case_x"].scatter(
     c="C3",
 )
 ax_dict["mean_case_x"].legend(loc="upper right")
-ax_dict["mean_case_x"].set_xlabel(r"$\mu_{xpol}$ [a.u.]")
+ax_dict["mean_case_x"].set_xlabel(r"$\mu_{^\perp\beta'}$ [a.u.]")
 #####################################################################
 
 ax_dict["mean_cal"].scatter(
@@ -133,12 +133,12 @@ ax_dict["mean_cal_x"].set_xlabel(r"$\mu_{\perp P_\mathrm{instrument} O(r)}$ [a.u
 #####################################################################
 
 ax_dict["std_case"].scatter(df_case_std.ppol_r**2, df_case_std.range, s=1)
-ax_dict["std_case"].set_xlabel(r"$\sigma²_{ppol/r²}$ [a.u.]")
+ax_dict["std_case"].set_xlabel(r"$\sigma²_{^\parallel\beta'/r²}$ [a.u.]")
 ax_dict["std_case"].set_ylabel("Range [km]")
 #####################################################################
 
 ax_dict["std_case_x"].scatter(df_case_std.xpol_r**2, df_case_std.range, s=1)
-ax_dict["std_case_x"].set_xlabel(r"$\sigma²_{xpol/r²}$ [a.u.]")
+ax_dict["std_case_x"].set_xlabel(r"$\sigma²_{^\perp\beta'/r²}$ [a.u.]")
 #####################################################################
 
 ax_dict["std_cal"].scatter(
@@ -187,7 +187,7 @@ for n, ax_ in enumerate(ax_dict):
     ax_dict[ax_].set_ylim(0, 14000)
 fig.savefig(
     "/media/viet/CL61/img/solar_example.png",
-    dpi=600,
+    dpi=300,
     bbox_inches="tight",
 )
 

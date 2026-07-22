@@ -51,7 +51,7 @@ for n, ax_ in enumerate(ax):
     )
     ax_.set_ylim(0, 14000)
     ax_.grid()
-    ax_.set_xlabel(r"$\sigma²_{ppol/r²}$ [a.u.]")
+    ax_.set_xlabel(r"$\sigma²_{^\parallel\beta'/r²}$ [a.u.]")
 fig.savefig("/media/viet/CL61/img/solar_compare.png", dpi=600, bbox_inches="tight")
 
 # %%

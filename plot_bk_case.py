@@ -33,13 +33,13 @@ p = ax[0, 0].pcolormesh(
     df["time"], df["range"], df["p_pol"].T, norm=LogNorm(vmin=1e-7, vmax=1e-4)
 )
 cbar = fig.colorbar(p, ax=ax[0, 0])
-cbar.ax.set_ylabel("$ppol$ [a.u.]")
+cbar.ax.set_ylabel(r"$^\parallel\beta'$ [a.u.]")
 
 p = ax[0, 1].pcolormesh(
     df["time"], df["range"], df["x_pol"].T, norm=LogNorm(vmin=1e-7, vmax=1e-4)
 )
 cbar = fig.colorbar(p, ax=ax[0, 1])
-cbar.ax.set_ylabel("$xpol$ [a.u.]")
+cbar.ax.set_ylabel(r"$^\perp\beta'$ [a.u.]")
 
 p = ax[1, 0].pcolormesh(
     df["time"],
@@ -48,7 +48,7 @@ p = ax[1, 0].pcolormesh(
     norm=LogNorm(vmin=1e-7, vmax=1e-4),
 )
 cbar = fig.colorbar(p, ax=ax[1, 0])
-cbar.ax.set_ylabel("$ppol$ [a.u.]")
+cbar.ax.set_ylabel(r"$^\parallel\beta'$ [a.u.]")
 
 p = ax[1, 1].pcolormesh(
     df["time"],
@@ -57,7 +57,7 @@ p = ax[1, 1].pcolormesh(
     norm=LogNorm(vmin=1e-7, vmax=1e-4),
 )
 cbar = fig.colorbar(p, ax=ax[1, 1])
-cbar.ax.set_ylabel("$xpol$ [a.u.]")
+cbar.ax.set_ylabel(r"$^\perp\beta'$ [a.u.]")
 ax[0, 0].set_xlim(df.time.values[0], df.time.values[-1] + pd.Timedelta(minutes=5))
 
 for x in grp_mean.range_bins.values:
@@ -95,9 +95,11 @@ ax[2, 0].set_ylabel(r"$\mu_{\parallel P_\mathrm{res}}$ [a.u.]")
 ax[2, 1].set_ylabel(r"$\mu_{\perp P_\mathrm{res}}$ [a.u.]")
 ax[3, 0].set_ylabel(r"$\sigma²_{\parallel P_\mathrm{res}}$ [a.u.]")
 ax[3, 1].set_ylabel(r"$\sigma²_{\perp P_\mathrm{res}}$ [a.u.]")
+ax[3, 0].set_xlabel("Time [UTC]")
+ax[3, 1].set_xlabel("Time [UTC]")
 
 handles, labels = ax[3, 1].get_legend_handles_labels()
-fig.legend(handles, labels, ncol=6, loc="outside lower center", title="Range bins")
+fig.legend(handles, labels, ncol=6, loc="outside lower center", title="Range bins [m]")
 for ax_ in ax.flatten()[4:]:
     ax_.grid()
     ax_.xaxis.set_major_formatter(plt.matplotlib.dates.DateFormatter("%H:%M"))
@@ -111,5 +113,5 @@ for n, ax_ in enumerate(ax.flatten()):
         transform=ax_.transAxes,
         size=12,
     )
-fig.savefig("/media/viet/CL61/img/20240328_bk_noise.png", dpi=400, bbox_inches="tight")
+fig.savefig("/media/viet/CL61/img/20240328_bk_noise.png", dpi=300, bbox_inches="tight")
 # %%
